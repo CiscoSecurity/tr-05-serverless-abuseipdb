@@ -15,8 +15,32 @@ def validate_string(value, *, choices=None):
 
 
 OBSERVABLE_TYPE_CHOICES = (
+    'amp_computer_guid',
+    'cisco_mid',
+    'device',
+    'domain',
+    'email',
+    'email_messageid',
+    'email_subject',
+    'file_name',
+    'file_path',
+    'hostname',
+    'imei',
+    'imsi',
     'ip',
     'ipv6',
+    'mac_address',
+    'md5',
+    'mutex',
+    'ngfw_id',
+    'ngfw_name',
+    'odns_identity',
+    'odns_identity_label',
+    'pki_serial',
+    'sha1',
+    'sha256',
+    'url',
+    'user',
 )
 
 
