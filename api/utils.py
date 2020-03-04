@@ -1,7 +1,17 @@
+from typing import Optional
+import json
+
 from authlib.jose import jwt
 from authlib.jose.errors import JoseError
 from flask import request, current_app, jsonify
 from werkzeug.exceptions import Forbidden, BadRequest
+
+
+def url_for(endpoint) -> Optional[str]:
+
+    return current_app.config['ABUSE_IPDB_API_URL'].format(
+        endpoint=endpoint,
+    )
 
 
 def get_jwt():
@@ -34,13 +44,39 @@ def get_json(schema):
 
     data = request.get_json(force=True, silent=True, cache=False)
 
-    message = schema.validate(data)
+    error = schema.validate(data) or None
+    if error:
+        data = None
+        # Mimic the Abuse IPDB API error response payload.
+        error = {
+            'code': 400,
+            'message': f'Invalid JSON payload received. {json.dumps(error)}.',
+            'details': error,
+            'status': 'INVALID_ARGUMENT',
+        }
 
-    if message:
-        raise BadRequest(message)
-
-    return data
+    return data, error
 
 
 def jsonify_data(data):
     return jsonify({'data': data})
+
+
+def jsonify_errors(error):
+    # Make the actual AbuseIPDB error payload compatible with the expected
+    # TR error payload in order to fix the following types of possible
+    # UI alerts, e.g.:
+    # :code (not (instance? java.lang.String 40x)),
+    # :details disallowed-key,
+    # :status disallowed-key,
+    # etc.
+    error['code'] = error.pop('status').lower()
+    error.pop('details', None)
+
+    # According to the official documentation, an error here means that the
+    # corresponding TR module is in an incorrect state and needs to be
+    # reconfigured:
+    # https://visibility.amp.cisco.com/help/alerts-errors-warnings.
+    error['type'] = 'fatal'
+
+    return jsonify({'errors': [error]})
