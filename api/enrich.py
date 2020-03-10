@@ -1,6 +1,5 @@
 from functools import partial
-from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from flask import Blueprint, current_app
 import requests
@@ -52,55 +51,62 @@ def validate_abuse_ipdb_output(abuse_input):
 
 
 def group_observables(relay_input):
-    # Leave only unique (value, type) pairs grouped by value.
+    # Leave only unique pairs.
 
-    observables = defaultdict(set)
-
+    result = []
     for observable in relay_input:
-        value = observable['value']
-        type = observable['type'].lower()
 
-        # Discard any unsupported type.
-        if type in current_app.config['ABUSE_IPDB_OBSERVABLE_TYPES']:
-            observables[value].add(type)
+        observable['type'] = observable['type'].lower()
 
-    observables = {
-        value: sorted(types)
-        for value, types in observables.items()
-    }
+        # Get only supported types.
+        if observable['type'] in current_app.config['ABUSE_IPDB_OBSERVABLE_TYPES']:
+            if observable in result:
+                continue
+            result.append(observable)
 
-    return observables
+    return result
 
 
-def extract_verdicts(observables, start_time):
+def get_disposition(output):
+
+    score = output['abuseConfidenceScore']
+
+    disposition = None
+    disposition_name = None
+
+    for d_name, borders in current_app.config['ABUSE_SCORE_RELATIONS'].items():
+        if borders[0] <= score <= borders[1]:
+            disposition = current_app.config['CTIM_DISPOSITIONS'][d_name]
+            disposition_name = d_name
+
+    return disposition, disposition_name
+
+
+def extract_verdicts(outputs, start_time):
     docs = []
 
-    for items in observables:
-        for value, types in items.items():
+    for output in outputs:
 
-            disposition = None
-            disposition_name = None
-            cache_duration = 100
+        disposition, disposition_name = get_disposition(output['data'])
 
-            end_time = start_time + timedelta(seconds=cache_duration)
+        valid_time = {
+            'start_time': start_time.isoformat() + 'Z'
+        }
 
-            valid_time = {
-                'start_time': start_time.isoformat() + 'Z',
-                'end_time': end_time.isoformat() + 'Z',
-            }
+        observable = {
+            'value': output['data']['observable']['value'],
+            'type': output['data']['observable']['type']
+        }
 
-            for type in types:
-                observable = {'value': value, 'type': type}
+        doc = {
+            'observable': observable,
+            'disposition': disposition,
+            'disposition_name': disposition_name,
+            'valid_time': valid_time,
+            **current_app.config['CTIM_VERDICT_DEFAULTS']
+        }
 
-                doc = {
-                    'observable': observable,
-                    'disposition': disposition,
-                    'disposition_name': disposition_name,
-                    'valid_time': valid_time,
-                    **current_app.config['CTIM_VERDICT_DEFAULTS']
-                }
-
-                docs.append(doc)
+        docs.append(doc)
 
     return docs
 
@@ -123,12 +129,14 @@ def deliberate_observables():
 
     abuse_abuse_ipdb_outputs = []
 
-    for value in observables.keys():
-        abuse_abuse_ipdb_output, error = validate_abuse_ipdb_output(value)
+    for observable in observables:
+        abuse_abuse_ipdb_output, error = validate_abuse_ipdb_output(
+            observable['value'])
 
         if error:
             return jsonify_errors(error)
 
+        abuse_abuse_ipdb_output['data']['observable'] = observable
         abuse_abuse_ipdb_outputs.append(abuse_abuse_ipdb_output)
 
     start_time = datetime.utcnow()
