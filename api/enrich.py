@@ -47,7 +47,7 @@ def validate_abuse_ipdb_output(abuse_input):
             }
             return None, error
         else:
-            return None, response.json()['error']
+            return None, response.json()['errors']
 
 
 def group_observables(relay_input):
