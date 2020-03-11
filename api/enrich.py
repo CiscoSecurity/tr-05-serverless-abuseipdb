@@ -120,7 +120,7 @@ def deliberate_observables():
     relay_input, error = get_json(ObservableSchema(many=True))
 
     if error:
-        return jsonify_errors(error)
+        return jsonify_errors([error])
 
     observables = group_observables(relay_input)
 
@@ -130,11 +130,11 @@ def deliberate_observables():
     abuse_abuse_ipdb_outputs = []
 
     for observable in observables:
-        abuse_abuse_ipdb_output, error = validate_abuse_ipdb_output(
+        abuse_abuse_ipdb_output, errors = validate_abuse_ipdb_output(
             observable['value'])
 
-        if error:
-            return jsonify_errors(error)
+        if errors:
+            return jsonify_errors(errors)
 
         abuse_abuse_ipdb_output['data']['observable'] = observable
         abuse_abuse_ipdb_outputs.append(abuse_abuse_ipdb_output)

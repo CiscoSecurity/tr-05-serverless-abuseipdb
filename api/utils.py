@@ -62,21 +62,17 @@ def jsonify_data(data):
     return jsonify({'data': data})
 
 
-def jsonify_errors(error):
-    # Make the actual AbuseIPDB error payload compatible with the expected
-    # TR error payload in order to fix the following types of possible
-    # UI alerts, e.g.:
-    # :code (not (instance? java.lang.String 40x)),
-    # :details disallowed-key,
-    # :status disallowed-key,
-    # etc.
-    error['code'] = error.pop('status').lower()
-    error.pop('details', None)
+def jsonify_errors(errors):
 
-    # According to the official documentation, an error here means that the
-    # corresponding TR module is in an incorrect state and needs to be
-    # reconfigured:
-    # https://visibility.amp.cisco.com/help/alerts-errors-warnings.
-    error['type'] = 'fatal'
+    for error in errors:
+        error['code'] = error.get('status', 'internal_error').lower()
+        if not error.get('message'):
+            error['message'] = error.get('detail', 'unexpected error')
 
-    return jsonify({'errors': [error]})
+        error.pop('detail', None)
+        error.pop('details', None)
+        error.pop('status', None)
+
+        error['type'] = 'fatal'
+
+    return jsonify({'errors': errors})
