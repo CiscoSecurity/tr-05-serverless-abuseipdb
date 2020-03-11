@@ -153,13 +153,11 @@ def deliberate_observables():
 
 @enrich_api.route('/observe/observables', methods=['POST'])
 def observe_observables():
-    _ = get_jwt()
     _ = get_observables()
     return jsonify_data({})
 
 
 @enrich_api.route('/refer/observables', methods=['POST'])
 def refer_observables():
-    _ = get_jwt()
     _ = get_observables()
     return jsonify_data([])

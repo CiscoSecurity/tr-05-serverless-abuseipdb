@@ -4,7 +4,6 @@ import json
 from authlib.jose import jwt
 from authlib.jose.errors import JoseError
 from flask import request, current_app, jsonify
-from werkzeug.exceptions import Forbidden, BadRequest
 
 
 def url_for(endpoint) -> Optional[str]:
