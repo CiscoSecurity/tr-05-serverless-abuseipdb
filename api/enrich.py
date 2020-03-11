@@ -25,7 +25,7 @@ def validate_abuse_ipdb_output(abuse_input):
 
     headers = {
         'Accept': 'application/json',
-        'Key': get_jwt().get('key')
+        'Key': get_jwt().get('key', '')
     }
 
     params = {
@@ -45,7 +45,7 @@ def validate_abuse_ipdb_output(abuse_input):
                 'message': 'The request is missing a valid API key.',
                 'status': 'PERMISSION_DENIED',
             }
-            return None, error
+            return None, [error]
         else:
             return None, response.json()['errors']
 
