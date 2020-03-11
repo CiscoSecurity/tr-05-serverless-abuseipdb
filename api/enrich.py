@@ -54,15 +54,15 @@ def group_observables(relay_input):
     # Leave only unique pairs.
 
     result = []
-    for observable in relay_input:
+    for obj in relay_input:
 
-        observable['type'] = observable['type'].lower()
+        obj['type'] = obj['type'].lower()
 
         # Get only supported types.
-        if observable['type'] in current_app.config['ABUSE_IPDB_OBSERVABLE_TYPES']:
-            if observable in result:
+        if obj['type'] in current_app.config['ABUSE_IPDB_OBSERVABLE_TYPES']:
+            if obj in result:
                 continue
-            result.append(observable)
+            result.append(obj)
 
     return result
 

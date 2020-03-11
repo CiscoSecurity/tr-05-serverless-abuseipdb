@@ -1,8 +1,14 @@
 import os
 
+from version import VERSION
+
 
 class Config(object):
+    VERSION = VERSION
+
     SECRET_KEY = os.environ.get('SECRET_KEY', '')
+
+    ABUSE_IPDB_API_CLIENT_VERSION = VERSION
 
     ABUSE_IPDB_API_URL = 'https://api.abuseipdb.com/api/v2/{endpoint}'
 
