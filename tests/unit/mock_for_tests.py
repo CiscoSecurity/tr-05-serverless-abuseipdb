@@ -26,3 +26,23 @@ EXPECTED_RESPONSE_AUTH_ERROR = {
         }
     ]
 }
+
+EXPECTED_RESPONSE_404_ERROR = {
+    'errors': [
+        {
+            'code': 'not_found',
+            'message': 'The Abuse IPDB not found.',
+            'type': 'fatal'
+        }
+    ]
+}
+
+EXPECTED_RESPONSE_500_ERROR = {
+    'errors': [
+        {
+            'code': '3rd_party_api_internal_error',
+            'message': 'The Abuse IPDB internal error.',
+            'type': 'fatal'
+        }
+    ]
+}

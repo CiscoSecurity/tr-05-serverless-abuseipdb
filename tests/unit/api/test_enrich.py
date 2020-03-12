@@ -6,7 +6,9 @@ from unittest import mock
 from .utils import headers
 from tests.unit.mock_for_tests import (
     EXPECTED_RESPONSE_DELIBERATE,
-    EXPECTED_RESPONSE_AUTH_ERROR
+    EXPECTED_RESPONSE_AUTH_ERROR,
+    EXPECTED_RESPONSE_404_ERROR,
+    EXPECTED_RESPONSE_500_ERROR
 )
 
 
@@ -25,7 +27,7 @@ def gsb_api_request():
         yield mock_request
 
 
-def gsb_api_response(*, ok):
+def gsb_api_response(*, ok, status_error=None):
     mock_response = mock.MagicMock()
 
     mock_response.ok = ok
@@ -48,18 +50,17 @@ def gsb_api_response(*, ok):
             }
         }
 
+
     else:
-        mock_response.status_code = 401
-        payload = {
-            "errors": [
-                {
-                    "detail": "Authentication failed. You are either missing "
-                              "your API key or it is incorrect. Note: "
-                              "The APIv2 key differs from the APIv1 key.",
-                    "status": 401
-                }
-            ]
-        }
+
+        if status_error == 404:
+            mock_response.status_code = 404
+
+        elif status_error == 500:
+            mock_response.status_code = 500
+
+        else:
+            mock_response.status_code = 401
 
     mock_response.json = lambda: payload
 
@@ -126,3 +127,33 @@ def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
 
     data = response.get_json()
     assert data == EXPECTED_RESPONSE_AUTH_ERROR
+
+
+def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
+                                gsb_api_request):
+
+    gsb_api_request.return_value = gsb_api_response(ok=False, status_error=404)
+
+    response = client.post(
+        route, headers=headers(valid_jwt), json=valid_json
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    data = response.get_json()
+    assert data == EXPECTED_RESPONSE_404_ERROR
+
+
+def test_enrich_call_500_error(route, client, valid_jwt, valid_json,
+                                gsb_api_request):
+
+    gsb_api_request.return_value = gsb_api_response(ok=False, status_error=500)
+
+    response = client.post(
+        route, headers=headers(valid_jwt), json=valid_json
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    data = response.get_json()
+    assert data == EXPECTED_RESPONSE_500_ERROR
