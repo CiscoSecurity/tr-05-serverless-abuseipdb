@@ -66,12 +66,39 @@ def jsonify_errors(errors):
     for error in errors:
         error['code'] = error.get('status', 'internal_error').lower()
         if not error.get('message'):
-            error['message'] = error.get('detail', 'unexpected error')
+            error['message'] = error.pop('detail', 'unexpected error')
 
-        error.pop('detail', None)
         error.pop('details', None)
         error.pop('status', None)
 
         error['type'] = 'fatal'
 
     return jsonify({'errors': errors})
+
+
+def get_response_data(response):
+
+    if response.ok:
+        return response.json(), None
+
+    else:
+        if response.status_code == 401:
+            error = {
+                'message': 'The request is missing a valid API key.',
+                'status': 'PERMISSION_DENIED',
+            }
+            return None, [error]
+        if response.status_code == 404:
+            error = {
+                'message': 'The Abuse IPDB not found.',
+                'status': 'NOT_FOUND',
+            }
+            return None, [error]
+        if response.status_code == 500:
+            error = {
+                'message': 'The Abuse IPDB internal error.',
+                'status': '3RD_PARTY_API_INTERNAL_ERROR',
+            }
+            return None, [error]
+        else:
+            return None, response.json()['errors']

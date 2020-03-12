@@ -10,7 +10,8 @@ from api.utils import (
     get_jwt,
     jsonify_data,
     url_for,
-    jsonify_errors
+    jsonify_errors,
+    get_response_data
 )
 
 
@@ -36,18 +37,7 @@ def validate_abuse_ipdb_output(abuse_input):
 
     response = requests.get(url, headers=headers, params=params)
 
-    if response.ok:
-        return response.json(), None
-    else:
-        if response.status_code == 401:
-            error = {
-                'code': 403,
-                'message': 'The request is missing a valid API key.',
-                'status': 'PERMISSION_DENIED',
-            }
-            return None, [error]
-        else:
-            return None, response.json()['errors']
+    return get_response_data(response)
 
 
 def group_observables(relay_input):
