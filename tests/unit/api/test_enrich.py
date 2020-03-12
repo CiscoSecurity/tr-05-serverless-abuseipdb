@@ -50,7 +50,6 @@ def gsb_api_response(*, ok, status_error=None):
             }
         }
 
-
     else:
 
         if status_error == 404:
@@ -130,7 +129,7 @@ def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
 
 
 def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
-                                gsb_api_request):
+                               gsb_api_request):
 
     gsb_api_request.return_value = gsb_api_response(ok=False, status_error=404)
 
@@ -145,7 +144,7 @@ def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
 
 
 def test_enrich_call_500_error(route, client, valid_jwt, valid_json,
-                                gsb_api_request):
+                               gsb_api_request):
 
     gsb_api_request.return_value = gsb_api_response(ok=False, status_error=500)
 
