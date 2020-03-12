@@ -48,10 +48,8 @@ def get_json(schema):
         data = None
         # Mimic the Abuse IPDB API error response payload.
         error = {
-            'code': 400,
-            'message': f'Invalid JSON payload received. {json.dumps(error)}.',
-            'details': error,
             'status': 'INVALID_ARGUMENT',
+            'message': f'Invalid JSON payload received. {json.dumps(error)}.'
         }
 
     return data, error
@@ -64,12 +62,11 @@ def jsonify_data(data):
 def jsonify_errors(errors):
 
     for error in errors:
-        error['code'] = error.get('status', 'internal_error').lower()
+        error['code'] = error.pop('status', 'internal_error').lower()
         if not error.get('message'):
             error['message'] = error.pop('detail', 'unexpected error')
 
         error.pop('details', None)
-        error.pop('status', None)
 
         error['type'] = 'fatal'
 
