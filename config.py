@@ -12,6 +12,8 @@ class Config(object):
 
     ABUSE_IPDB_API_URL = 'https://api.abuseipdb.com/api/v2/{endpoint}'
 
+    ABUSE_IPDB_HEALTH_CHECK_IP = '192.168.1.100'
+
     ABUSE_IPDB_OBSERVABLE_TYPES = {
         'ip': 'IP',
         'ipv6': 'IPV6',
