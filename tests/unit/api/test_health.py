@@ -21,12 +21,12 @@ def route(request):
 
 
 @fixture(scope='function')
-def gsb_api_request():
+def abuse_api_request():
     with mock.patch('requests.get') as mock_request:
         yield mock_request
 
 
-def gsb_api_response(*, ok, status_error=None):
+def abuse_api_response(*, ok, status_error=None):
     mock_response = mock.MagicMock()
 
     mock_response.ok = ok
@@ -62,28 +62,28 @@ def gsb_api_response(*, ok, status_error=None):
     return mock_response
 
 
-def test_health_call_success(route, client, valid_jwt, gsb_api_request):
-    gsb_api_request.return_value = gsb_api_response(ok=True)
+def test_health_call_success(route, client, valid_jwt, abuse_api_request):
+    abuse_api_request.return_value = abuse_api_response(ok=True)
     response = client.post(route, headers=headers(valid_jwt))
     assert response.status_code == HTTPStatus.OK
 
 
-def test_health_call_auth_error(route, client, valid_jwt, gsb_api_request):
-    gsb_api_request.return_value = gsb_api_response(ok=False)
+def test_health_call_auth_error(route, client, valid_jwt, abuse_api_request):
+    abuse_api_request.return_value = abuse_api_response(ok=False)
     response = client.post(route, headers=headers(valid_jwt))
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_AUTH_ERROR
 
 
-def test_health_call_404(route, client, valid_jwt, gsb_api_request):
-    gsb_api_request.return_value = gsb_api_response(ok=False, status_error=404)
+def test_health_call_404(route, client, valid_jwt, abuse_api_request):
+    abuse_api_request.return_value = abuse_api_response(ok=False, status_error=404)
     response = client.post(route, headers=headers(valid_jwt))
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_404_ERROR
 
 
-def test_health_call_500(route, client, valid_jwt, gsb_api_request):
-    gsb_api_request.return_value = gsb_api_response(ok=False, status_error=500)
+def test_health_call_500(route, client, valid_jwt, abuse_api_request):
+    abuse_api_request.return_value = abuse_api_response(ok=False, status_error=500)
     response = client.post(route, headers=headers(valid_jwt))
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_500_ERROR
