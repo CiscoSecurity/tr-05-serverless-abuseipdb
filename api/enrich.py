@@ -99,6 +99,9 @@ def extract_verdicts(outputs, start_time):
 
         docs.append(doc)
 
+        if output.get('judgement_id'):
+            doc['judgement_id'] = output['judgement_id']
+
     return docs
 
 
@@ -108,8 +111,12 @@ def extract_judgement(outputs):
     for output in outputs:
 
         reports = output['data']['reports']
+        reports.sort(key=lambda x: x['reportedAt'], reverse=True)
+
         if len(reports) >= 100:
             reports = reports[:100]
+
+        output['judgement_id'] = ''
 
         for report in reports:
 
@@ -145,7 +152,10 @@ def extract_judgement(outputs):
 
             docs.append(doc)
 
-    return docs, outputs
+            if not output['judgement_id']:
+                output['judgement_id'] = judgement_id
+
+    return docs
 
 
 def format_docs(docs):
@@ -214,8 +224,8 @@ def observe_observables():
 
     time_now = datetime.utcnow()
 
-    judgements, outputs = extract_judgement(abuse_abuse_ipdb_outputs)
-    verdicts = extract_verdicts(outputs, time_now)
+    judgements = extract_judgement(abuse_abuse_ipdb_outputs)
+    verdicts = extract_verdicts(abuse_abuse_ipdb_outputs, time_now)
 
     relay_output = {}
 
