@@ -25,12 +25,12 @@ def route(request):
 
 
 @fixture(scope='function')
-def gsb_api_request():
+def abuse_api_request():
     with mock.patch('requests.get') as mock_request:
         yield mock_request
 
 
-def gsb_api_response(*, ok, status_error=None):
+def abuse_api_response(*, ok, status_error=None):
     mock_response = mock.MagicMock()
 
     mock_response.ok = ok
@@ -102,9 +102,9 @@ def expected_payload(route, client):
 
 
 def test_enrich_call_success(route, client, valid_jwt, valid_json,
-                             gsb_api_request, expected_payload):
+                             abuse_api_request, expected_payload):
 
-    gsb_api_request.return_value = gsb_api_response(ok=True)
+    abuse_api_request.return_value = abuse_api_response(ok=True)
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
@@ -121,9 +121,9 @@ def test_enrich_call_success(route, client, valid_jwt, valid_json,
 
 
 def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
-                                gsb_api_request):
+                                abuse_api_request):
 
-    gsb_api_request.return_value = gsb_api_response(ok=False)
+    abuse_api_request.return_value = abuse_api_response(ok=False)
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
@@ -136,9 +136,10 @@ def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
 
 
 def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
-                               gsb_api_request):
+                               abuse_api_request):
 
-    gsb_api_request.return_value = gsb_api_response(ok=False, status_error=404)
+    abuse_api_request.return_value = abuse_api_response(ok=False,
+                                                        status_error=404)
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
@@ -151,9 +152,10 @@ def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
 
 
 def test_enrich_call_500_error(route, client, valid_jwt, valid_json,
-                               gsb_api_request):
+                               abuse_api_request):
 
-    gsb_api_request.return_value = gsb_api_response(ok=False, status_error=500)
+    abuse_api_request.return_value = abuse_api_response(ok=False,
+                                                        status_error=500)
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
