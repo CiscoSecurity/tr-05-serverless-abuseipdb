@@ -1,5 +1,6 @@
 from functools import partial
-from datetime import datetime
+from datetime import datetime, timedelta
+from uuid import uuid4
 
 from flask import Blueprint, current_app
 import requests
@@ -101,6 +102,55 @@ def extract_verdicts(outputs, start_time):
     return docs
 
 
+def extract_judgement(outputs):
+    docs = []
+
+    for output in outputs:
+
+        reports = output['data']['reports']
+        reports.sort(key=lambda x: x['reportedAt'], reverse=True)
+
+        if len(reports) >= current_app.config['CTIM_JUDGEMENTS_NUMBER']:
+            reports = reports[:current_app.config['CTIM_JUDGEMENTS_NUMBER']]
+
+        for report in reports:
+
+            start_time = datetime.strptime(
+                report['reportedAt'].split('+')[0],
+                '%Y-%m-%dT%H:%M:%S'
+            )
+            end_time = start_time + timedelta(
+                days=current_app.config['CTIM_VALID_DAYS_PERIOD'])
+
+            valid_time = {
+                'start_time': start_time.isoformat(
+                    timespec='microseconds') + 'Z',
+                'end_time': end_time.isoformat(timespec='microseconds') + 'Z',
+            }
+
+            observable = {
+                'value': output['data']['observable']['value'],
+                'type': output['data']['observable']['type']
+            }
+
+            judgement_id = f'transient:{uuid4()}'
+
+            doc = {
+                'id': judgement_id,
+                'observable': observable,
+                'disposition': 2,
+                'disposition_name': 'Malicious',
+                'valid_time': valid_time,
+                'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
+                    ip=output['data']['observable']['value']),
+                **current_app.config['CTIM_JUDGEMENT_DEFAULTS']
+            }
+
+            docs.append(doc)
+
+    return docs
+
+
 def format_docs(docs):
     return {'count': len(docs), 'docs': docs}
 
@@ -143,8 +193,41 @@ def deliberate_observables():
 
 @enrich_api.route('/observe/observables', methods=['POST'])
 def observe_observables():
-    _ = get_observables()
-    return jsonify_data({})
+    relay_input, error = get_json(ObservableSchema(many=True))
+
+    if error:
+        return jsonify_errors([error])
+
+    observables = group_observables(relay_input)
+
+    if not observables:
+        return jsonify_data({})
+
+    abuse_abuse_ipdb_outputs = []
+
+    for observable in observables:
+        abuse_abuse_ipdb_output, errors = validate_abuse_ipdb_output(
+            observable['value'])
+
+        if errors:
+            return jsonify_errors(errors)
+
+        abuse_abuse_ipdb_output['data']['observable'] = observable
+        abuse_abuse_ipdb_outputs.append(abuse_abuse_ipdb_output)
+
+    time_now = datetime.utcnow()
+
+    judgements = extract_judgement(abuse_abuse_ipdb_outputs)
+    verdicts = extract_verdicts(abuse_abuse_ipdb_outputs, time_now)
+
+    relay_output = {}
+
+    if judgements:
+        relay_output['judgements'] = format_docs(judgements)
+    if verdicts:
+        relay_output['verdicts'] = format_docs(verdicts)
+
+    return jsonify_data(relay_output)
 
 
 @enrich_api.route('/refer/observables', methods=['POST'])

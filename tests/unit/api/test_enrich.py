@@ -8,12 +8,15 @@ from tests.unit.mock_for_tests import (
     EXPECTED_RESPONSE_DELIBERATE,
     EXPECTED_RESPONSE_AUTH_ERROR,
     EXPECTED_RESPONSE_404_ERROR,
-    EXPECTED_RESPONSE_500_ERROR
+    EXPECTED_RESPONSE_500_ERROR,
+    ABUSE_RESPONSE_MOCK,
+    EXPECTED_RESPONSE_OBSERVE
 )
 
 
 def routes():
     yield '/deliberate/observables'
+    yield '/observe/observables'
 
 
 @fixture(scope='module', params=routes(), ids=lambda route: f'POST {route}')
@@ -33,22 +36,7 @@ def abuse_api_response(*, ok, status_error=None):
     mock_response.ok = ok
 
     if ok:
-        payload = {
-            "data": {
-                "ipAddress": "118.25.6.39",
-                "isPublic": True,
-                "ipVersion": 4,
-                "isWhitelisted": False,
-                "abuseConfidenceScore": 30,
-                "countryCode": "CN",
-                "usageType": "Data Center/Web Hosting/Transit",
-                "isp": "Tencent Cloud Computing (Beijing) Co. Ltd",
-                "domain": "tencent.com",
-                "totalReports": 4,
-                "numDistinctUsers": 4,
-                "lastReportedAt": "2020-03-04T15:57:03+00:00"
-            }
-        }
+        payload = ABUSE_RESPONSE_MOCK
 
     else:
 
@@ -97,8 +85,24 @@ def valid_json():
     return [{'type': 'ip', 'value': '118.25.6.39'}]
 
 
+@fixture(scope='module')
+def expected_payload(route, client):
+
+    payload = None
+
+    if route.startswith('/deliberate'):
+
+        payload = EXPECTED_RESPONSE_DELIBERATE
+
+    if route.startswith('/observe'):
+
+        payload = EXPECTED_RESPONSE_OBSERVE
+
+    return payload
+
+
 def test_enrich_call_success(route, client, valid_jwt, valid_json,
-                             abuse_api_request):
+                             abuse_api_request, expected_payload):
 
     abuse_api_request.return_value = abuse_api_response(ok=True)
 
@@ -110,7 +114,10 @@ def test_enrich_call_success(route, client, valid_jwt, valid_json,
 
     data = response.get_json()
     assert data['data']['verdicts']['docs'][0].pop('valid_time')
-    assert data == EXPECTED_RESPONSE_DELIBERATE
+    if data['data'].get('judgements'):
+        assert data['data']['judgements']['docs'][0].pop('id')
+        assert data['data']['judgements']['docs'][1].pop('id')
+    assert data == expected_payload
 
 
 def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
