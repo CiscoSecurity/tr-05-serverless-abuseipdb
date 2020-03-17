@@ -40,6 +40,8 @@ class Config(object):
         'priority': 85,
         'severity': 'Medium',
     }
+    CTIM_JUDGEMENTS_NUMBER = 100
+    CTIM_VALID_DAYS_PERIOD = 7
 
     CTIM_DISPOSITIONS = {
         'Clean': 1,

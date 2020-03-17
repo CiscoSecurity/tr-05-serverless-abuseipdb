@@ -110,8 +110,8 @@ def extract_judgement(outputs):
         reports = output['data']['reports']
         reports.sort(key=lambda x: x['reportedAt'], reverse=True)
 
-        if len(reports) >= 100:
-            reports = reports[:100]
+        if len(reports) >= current_app.config['CTIM_JUDGEMENTS_NUMBER']:
+            reports = reports[:current_app.config['CTIM_JUDGEMENTS_NUMBER']]
 
         for report in reports:
 
@@ -119,7 +119,8 @@ def extract_judgement(outputs):
                 report['reportedAt'].split('+')[0],
                 '%Y-%m-%dT%H:%M:%S'
             )
-            end_time = start_time + timedelta(days=7)
+            end_time = start_time + timedelta(
+                days=current_app.config['CTIM_VALID_DAYS_PERIOD'])
 
             valid_time = {
                 'start_time': start_time.isoformat(
