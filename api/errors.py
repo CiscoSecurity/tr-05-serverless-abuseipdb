@@ -47,12 +47,10 @@ class AbuseInvalidCredentialsError(TRError):
 
 class AbuseUnexpectedResponseError(TRError):
     def __init__(self, payload):
-        error_payload = json.loads(payload).get('error', {})
+        error_payload = json.loads(payload).get('errors', [])
 
         super().__init__(
-            error_payload.get('status', '').lower().replace('_', ' '),
-            error_payload.get('message', None)
-            or error_payload.get('details', None)
+            message=str(error_payload)
         )
 
 
