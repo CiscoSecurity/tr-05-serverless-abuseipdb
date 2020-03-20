@@ -117,6 +117,9 @@ def test_enrich_call_success(route, client, valid_jwt, valid_json,
     if data['data'].get('judgements'):
         assert data['data']['judgements']['docs'][0].pop('id')
         assert data['data']['judgements']['docs'][1].pop('id')
+    if data['data'].get('sightings'):
+        assert data['data']['sightings']['docs'][0].pop('id')
+        assert data['data']['sightings']['docs'][1].pop('id')
     assert data == expected_payload
 
 

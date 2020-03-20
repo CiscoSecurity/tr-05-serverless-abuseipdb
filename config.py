@@ -40,7 +40,16 @@ class Config(object):
         'priority': 85,
         'severity': 'Medium',
     }
+    CTIM_SIGHTING_DEFAULT = {
+        'type': 'sighting',
+        'schema_version': '1.0.16',
+        'source': 'AbuseIPDB',
+        'confidence': 'Medium',
+        'title': 'Reported to AbuseIPDB',
+        'internal': False
+    }
     CTIM_JUDGEMENTS_NUMBER = 100
+    CTIM_SIGHTINGS_NUMBER = 100
     CTIM_VALID_DAYS_PERIOD = 7
 
     CTIM_DISPOSITIONS = {
