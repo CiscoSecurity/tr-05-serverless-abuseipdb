@@ -107,6 +107,99 @@ EXPECTED_RESPONSE_OBSERVE = {
                 }
             ]
         },
+        'sightings': {
+            'count': 2,
+            'docs': [
+                {
+                    'confidence': 'Medium',
+                    'count': 2,
+                    'description': 'ssh',
+                    'external_references': [
+                        {
+                            'source_name': 'AbuseIPDB',
+                            'url':
+                                'https://www.abuseipdb.com/check/118.25.6.39'
+                        }
+                    ],
+                    'internal': False,
+                    'observables': [
+                        {
+                            'type': 'ip',
+                            'value': '118.25.6.39'
+                        }
+                    ],
+                    'observed_time': {
+                        'start_time': '2020-03-10T23:11:57.000000Z'
+                    },
+                    'relations': [
+                        {
+                            'origin': 'AbuseIPDB Enrichment Module',
+                            'origin_uri':
+                                'https://www.abuseipdb.com/check/118.25.6.39',
+                            'related': {
+                                'type': 'ip',
+                                'value': '118.25.6.39'
+                            },
+                            'relation': 'Resolved_To',
+                            'source': {
+                                'type': 'domain',
+                                'value': 'chinatelecom.com.cn'
+                            }
+                        }
+                    ],
+                    'schema_version': '1.0.16',
+                    'source': 'AbuseIPDB',
+                    'source_uri':
+                        'https://www.abuseipdb.com/check/118.25.6.39',
+                    'title': 'Reported to AbuseIPDB',
+                    'type': 'sighting'
+                },
+                {
+                    'confidence': 'Medium',
+                    'count': 2,
+                    'description': 'SSH login attempts with user root.',
+                    'external_references': [
+                        {
+                            'source_name': 'AbuseIPDB',
+                            'url':
+                                'https://www.abuseipdb.com/check/118.25.6.39'
+                        }
+                    ],
+                    'internal': False,
+                    'observables': [
+                        {
+                            'type': 'ip',
+                            'value': '118.25.6.39'
+                        }
+                    ],
+                    'observed_time': {
+                        'start_time': '2020-02-26T14:34:59.000000Z'
+                    },
+                    'relations': [
+                        {
+                            'origin': 'AbuseIPDB Enrichment Module',
+                            'origin_uri':
+                                'https://www.abuseipdb.com/check/118.25.6.39',
+                            'related': {
+                                'type': 'ip',
+                                'value': '118.25.6.39'
+                            },
+                            'relation': 'Resolved_To',
+                            'source': {
+                                'type': 'domain',
+                                'value': 'chinatelecom.com.cn'
+                            }
+                        }
+                    ],
+                    'schema_version': '1.0.16',
+                    'source': 'AbuseIPDB',
+                    'source_uri':
+                        'https://www.abuseipdb.com/check/118.25.6.39',
+                    'title': 'Reported to AbuseIPDB',
+                    'type': 'sighting'
+                 }
+            ]
+        },
         "verdicts": {
             "count": 1,
             "docs": [
