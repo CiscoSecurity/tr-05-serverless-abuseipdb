@@ -221,7 +221,7 @@ EXPECTED_RESPONSE_OBSERVE = {
 EXPECTED_RESPONSE_AUTH_ERROR = {
     'errors': [
         {
-            'code': 'permission_denied',
+            'code': 'permission denied',
             'message': 'The request is missing a valid API key.',
             'type': 'fatal'
         }
@@ -231,7 +231,7 @@ EXPECTED_RESPONSE_AUTH_ERROR = {
 EXPECTED_RESPONSE_404_ERROR = {
     'errors': [
         {
-            'code': 'not_found',
+            'code': 'not found',
             'message': 'The Abuse IPDB not found.',
             'type': 'fatal'
         }
@@ -241,7 +241,7 @@ EXPECTED_RESPONSE_404_ERROR = {
 EXPECTED_RESPONSE_500_ERROR = {
     'errors': [
         {
-            'code': '3rd_party_api_internal_error',
+            'code': 'internal error',
             'message': 'The Abuse IPDB internal error.',
             'type': 'fatal'
         }

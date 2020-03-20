@@ -5,6 +5,14 @@ from authlib.jose import jwt
 from authlib.jose.errors import JoseError
 from flask import request, current_app, jsonify
 
+from api.errors import (
+    BadRequestError,
+    AbuseInvalidCredentialsError,
+    AbuseNotFoundError,
+    AbuseInternalServerError,
+    AbuseUnexpectedResponseError
+)
+
 
 def url_for(endpoint) -> Optional[str]:
 
@@ -45,57 +53,35 @@ def get_json(schema):
 
     error = schema.validate(data) or None
     if error:
-        data = None
-        # Mimic the Abuse IPDB API error response payload.
-        error = {
-            'status': 'INVALID_ARGUMENT',
-            'message': f'Invalid JSON payload received. {json.dumps(error)}.'
-        }
+        raise BadRequestError(
+            f'Invalid JSON payload received. {json.dumps(error)}.'
+        )
 
-    return data, error
+    return data
 
 
 def jsonify_data(data):
     return jsonify({'data': data})
 
 
-def jsonify_errors(errors):
-
-    for error in errors:
-        error['code'] = error.pop('status', 'internal_error').lower()
-        if not error.get('message'):
-            error['message'] = error.pop('detail', 'unexpected error')
-
-        error.pop('details', None)
-
-        error['type'] = 'fatal'
-
-    return jsonify({'errors': errors})
+def jsonify_errors(error):
+    return jsonify({'errors': [error]})
 
 
 def get_response_data(response):
 
     if response.ok:
-        return response.json(), None
+        return response.json()
 
     else:
         if response.status_code == 401:
-            error = {
-                'message': 'The request is missing a valid API key.',
-                'status': 'PERMISSION_DENIED',
-            }
-            return None, [error]
+            raise AbuseInvalidCredentialsError()
+
         if response.status_code == 404:
-            error = {
-                'message': 'The Abuse IPDB not found.',
-                'status': 'NOT_FOUND',
-            }
-            return None, [error]
+            raise AbuseNotFoundError()
+
         if response.status_code == 500:
-            error = {
-                'message': 'The Abuse IPDB internal error.',
-                'status': '3RD_PARTY_API_INTERNAL_ERROR',
-            }
-            return None, [error]
+            raise AbuseInternalServerError
+
         else:
-            return None, response.json()['errors']
+            raise AbuseUnexpectedResponseError(response)

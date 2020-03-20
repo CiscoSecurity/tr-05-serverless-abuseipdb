@@ -69,7 +69,7 @@ def test_enrich_call_with_invalid_json_failure(route, client, valid_jwt,
     expected_payload = {
         'errors': [
             {
-                'code': 'invalid_argument',
+                'code': 'invalid argument',
                 'message': mock.ANY,
                 'type': 'fatal',
             }

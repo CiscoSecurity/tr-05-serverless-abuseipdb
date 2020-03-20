@@ -11,7 +11,6 @@ from api.utils import (
     get_jwt,
     jsonify_data,
     url_for,
-    jsonify_errors,
     get_response_data
 )
 
@@ -56,6 +55,20 @@ def group_observables(relay_input):
             result.append(obj)
 
     return result
+
+
+def get_abuse_ipdb_outputs(observables):
+    # Return list of responses from AbuseIPDB for all observables
+
+    outputs = []
+    for observable in observables:
+        abuse_ipdb_output = validate_abuse_ipdb_output(
+            observable['value'])
+
+        abuse_ipdb_output['data']['observable'] = observable
+        outputs.append(abuse_ipdb_output)
+
+    return outputs
 
 
 def get_disposition(output):
@@ -222,31 +235,18 @@ def format_docs(docs):
 
 @enrich_api.route('/deliberate/observables', methods=['POST'])
 def deliberate_observables():
-    relay_input, error = get_json(ObservableSchema(many=True))
-
-    if error:
-        return jsonify_errors([error])
+    relay_input = get_json(ObservableSchema(many=True))
 
     observables = group_observables(relay_input)
 
     if not observables:
         return jsonify_data({})
 
-    abuse_abuse_ipdb_outputs = []
-
-    for observable in observables:
-        abuse_abuse_ipdb_output, errors = validate_abuse_ipdb_output(
-            observable['value'])
-
-        if errors:
-            return jsonify_errors(errors)
-
-        abuse_abuse_ipdb_output['data']['observable'] = observable
-        abuse_abuse_ipdb_outputs.append(abuse_abuse_ipdb_output)
+    abuse_outputs = get_abuse_ipdb_outputs(observables)
 
     start_time = datetime.utcnow()
 
-    verdicts = extract_verdicts(abuse_abuse_ipdb_outputs, start_time)
+    verdicts = extract_verdicts(abuse_outputs, start_time)
 
     relay_output = {}
 
@@ -258,33 +258,20 @@ def deliberate_observables():
 
 @enrich_api.route('/observe/observables', methods=['POST'])
 def observe_observables():
-    relay_input, error = get_json(ObservableSchema(many=True))
-
-    if error:
-        return jsonify_errors([error])
+    relay_input = get_json(ObservableSchema(many=True))
 
     observables = group_observables(relay_input)
 
     if not observables:
         return jsonify_data({})
 
-    abuse_abuse_ipdb_outputs = []
-
-    for observable in observables:
-        abuse_abuse_ipdb_output, errors = validate_abuse_ipdb_output(
-            observable['value'])
-
-        if errors:
-            return jsonify_errors(errors)
-
-        abuse_abuse_ipdb_output['data']['observable'] = observable
-        abuse_abuse_ipdb_outputs.append(abuse_abuse_ipdb_output)
+    abuse_outputs = get_abuse_ipdb_outputs(observables)
 
     time_now = datetime.utcnow()
 
-    judgements = extract_judgement(abuse_abuse_ipdb_outputs)
-    verdicts = extract_verdicts(abuse_abuse_ipdb_outputs, time_now)
-    sightings = extract_sightings(abuse_abuse_ipdb_outputs)
+    judgements = extract_judgement(abuse_outputs)
+    verdicts = extract_verdicts(abuse_outputs, time_now)
+    sightings = extract_sightings(abuse_outputs)
 
     relay_output = {}
 
