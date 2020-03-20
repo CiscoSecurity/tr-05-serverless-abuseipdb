@@ -151,6 +151,71 @@ def extract_judgement(outputs):
     return docs
 
 
+def extract_sightings(outputs):
+    docs = []
+
+    for output in outputs:
+
+        reports = output['data']['reports']
+        reports.sort(key=lambda x: x['reportedAt'], reverse=True)
+
+        if len(reports) >= current_app.config['CTIM_SIGHTINGS_NUMBER']:
+            reports = reports[:current_app.config['CTIM_SIGHTINGS_NUMBER']]
+
+        for report in reports:
+            start_time = datetime.strptime(
+                report['reportedAt'].split('+')[0],
+                '%Y-%m-%dT%H:%M:%S'
+            )
+
+            observed_time = {
+                'start_time': start_time.isoformat(
+                    timespec='microseconds') + 'Z',
+            }
+
+            observable = {
+                'value': output['data']['observable']['value'],
+                'type': output['data']['observable']['type']
+            }
+
+            sighting_id = f'transient:{uuid4()}'
+
+            external_reference = {
+                'source_name': 'AbuseIPDB',
+                'url': current_app.config['ABUSE_IPDB_UI_URL'].format(
+                    ip=output['data']['observable']['value'])
+            }
+
+            relation = {
+                'origin': 'AbuseIPDB Enrichment Module',
+                'source': {
+                    'type': 'domain',
+                    'value': output['data']['domain']
+                },
+                'related': observable,
+                'relation': 'Resolved_To',
+                'origin_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
+                        ip=output['data']['observable']['value'])
+            }
+
+            doc = {
+                'id': sighting_id,
+                'count': output['data']['totalReports'],
+                'observables': [observable],
+                'external_references': [external_reference],
+                'observed_time': observed_time,
+                'description': report['comment'],
+                'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
+                    ip=output['data']['observable']['value']),
+                'relations': [relation],
+                **current_app.config['CTIM_SIGHTING_DEFAULT']
+            }
+
+            docs.append(doc)
+
+    return docs
+
+
 def format_docs(docs):
     return {'count': len(docs), 'docs': docs}
 
@@ -219,6 +284,7 @@ def observe_observables():
 
     judgements = extract_judgement(abuse_abuse_ipdb_outputs)
     verdicts = extract_verdicts(abuse_abuse_ipdb_outputs, time_now)
+    sightings = extract_sightings(abuse_abuse_ipdb_outputs)
 
     relay_output = {}
 
@@ -226,6 +292,8 @@ def observe_observables():
         relay_output['judgements'] = format_docs(judgements)
     if verdicts:
         relay_output['verdicts'] = format_docs(verdicts)
+    if sightings:
+        relay_output['sightings'] = format_docs(sightings)
 
     return jsonify_data(relay_output)
 
