@@ -81,7 +81,7 @@ def get_response_data(response):
             raise AbuseNotFoundError()
 
         if response.status_code == 500:
-            raise AbuseInternalServerError
+            raise AbuseInternalServerError()
 
         else:
             raise AbuseUnexpectedResponseError(response)
