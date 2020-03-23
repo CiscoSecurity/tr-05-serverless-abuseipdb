@@ -35,20 +35,16 @@ def test_positive_sighting_ip_observable(module_headers):
         assert sighting['count'] == 5
         assert sighting['internal'] is False
         assert sighting['external_references'][0]['source_name'] == 'AbuseIPDB'
-        assert sighting[
-                   'external_references'][0][
-                   'url'] == 'https://www.abuseipdb.com/check/1.1.1.1'
+        assert sighting['external_references'][0]['url'] == (
+            'https://www.abuseipdb.com/check/1.1.1.1')
         assert sighting['observed_time']['start_time'] is not None
         assert sighting['observables'][0] == {'value': '1.1.1.1', 'type': 'ip'}
-        assert sighting[
-                   'relations'][0]['origin'] == 'AbuseIPDB Enrichment Module'
-        assert sighting[
-                   'relations'][0][
-                   'origin_uri'] == 'https://www.abuseipdb.com/check/1.1.1.1'
+        assert sighting['relations'][0]['origin'] == (
+            'AbuseIPDB Enrichment Module')
+        assert sighting['relations'][0]['origin_uri'] == (
+            'https://www.abuseipdb.com/check/1.1.1.1')
         assert sighting['relations'][0]['relation'] == 'Resolved_To'
-        assert sighting[
-                   'relations'][0][
-                   'source'] == {'value': 'cloudflare.com', 'type': 'domain'}
-        assert sighting[
-                   'relations'][0][
-                   'related'] == {'value': '1.1.1.1', 'type': 'ip'}
+        assert sighting['relations'][0]['source'] == {
+            'value': 'cloudflare.com', 'type': 'domain'}
+        assert sighting['relations'][0]['related'] == {
+            'value': '1.1.1.1', 'type': 'ip'}
