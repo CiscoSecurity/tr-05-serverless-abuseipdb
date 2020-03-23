@@ -6,7 +6,7 @@ def test_positive_sighting_ip_observable(module_headers):
     """Perform testing for enrich observe observables endpoint to get
     sighting for observable from Abuse IPDB module
 
-    ID: CCTRI-f58e47e4-f00e-423c-9a53-e3d03e337018
+    ID: CCTRI-841-f58e47e4-f00e-423c-9a53-e3d03e337018
 
     Steps:
         1. Send request to enrich observe observable endpoint
@@ -25,7 +25,7 @@ def test_positive_sighting_ip_observable(module_headers):
     sightings = get_observables(response, 'Abuse IPDB')['data']['sightings']
     for sighting in sightings['docs']:
         assert sighting['type'] == 'sighting'
-        assert sighting['schema_version'] == '1.0.16'
+        assert sighting['schema_version'] is not None
         assert sighting['source'] == 'AbuseIPDB'
         assert sighting[
                    'source_uri'] == 'https://www.abuseipdb.com/check/1.1.1.1'
