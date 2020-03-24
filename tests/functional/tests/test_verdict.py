@@ -44,7 +44,7 @@ def test_positive_suspicious_verdict_ip_observable(module_headers):
 
     Importance: Critical
     """
-    payload = {'type': 'ip', 'value': '118.25.6.39'}
+    payload = {'type': 'ip', 'value': '37.187.134.139'}
     response = enrich_deliberate_observables(
         payload=[payload],
         **{'headers': module_headers}
