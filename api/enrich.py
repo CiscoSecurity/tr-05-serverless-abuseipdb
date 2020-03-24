@@ -245,6 +245,29 @@ def extract_indicators(report, output, categories):
     return docs
 
 
+def extract_relationships(output):
+    docs = []
+
+    for key in output['relations'].keys():
+        relation = output['relations'][key]
+        indicator_id = relation['indicator_id']
+
+        for sighting_id in relation['sighting_ids']:
+
+            relationship_id = f'transient:{uuid4()}'
+
+            doc = {
+                'id': relationship_id,
+                'source_ref': sighting_id,
+                'target_ref': indicator_id,
+                **current_app.config['CTIM_RELATIONSHIPS_DEFAULT']
+            }
+
+            docs.append(doc)
+
+    return docs
+
+
 def format_docs(docs):
     return {'count': len(docs), 'docs': docs}
 
@@ -294,6 +317,7 @@ def observe_observables():
     judgements = []
     indicators = []
     sightings = []
+    relationships = []
 
     for output in abuse_outputs:
 
@@ -313,6 +337,8 @@ def observe_observables():
             indicators.extend(extract_indicators(report, output, categories))
             sightings.append(extract_sightings(report, output))
 
+        relationships.append(extract_relationships(output))
+
     relay_output = {}
 
     if judgements:
@@ -323,6 +349,8 @@ def observe_observables():
         relay_output['sightings'] = format_docs(sightings)
     if indicators:
         relay_output['indicators'] = format_docs(indicators)
+    if relationships:
+        relay_output['relationships'] = format_docs(relationships)
 
     return jsonify_data(relay_output)
 

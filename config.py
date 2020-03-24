@@ -30,12 +30,13 @@ class Config(object):
         'Malicious': (86, 100)
     }
 
+    CTIM_SCHEMA_VERSION = '1.0.16'
     CTIM_VERDICT_DEFAULTS = {
         'type': 'verdict',
     }
     CTIM_JUDGEMENT_DEFAULTS = {
         'type': 'judgement',
-        'schema_version': '1.0.16',
+        'schema_version': CTIM_SCHEMA_VERSION,
         'source': 'AbuseIPDB',
         'confidence': 'Medium',
         'priority': 85,
@@ -43,7 +44,7 @@ class Config(object):
     }
     CTIM_SIGHTING_DEFAULT = {
         'type': 'sighting',
-        'schema_version': '1.0.16',
+        'schema_version': CTIM_SCHEMA_VERSION,
         'source': 'AbuseIPDB',
         'confidence': 'Medium',
         'title': 'Reported to AbuseIPDB',
@@ -51,7 +52,7 @@ class Config(object):
     }
     CTIM_INDICATOR_DEFAULT = {
         'type': 'indicator',
-        'schema_version': '1.0.16',
+        'schema_version': CTIM_SCHEMA_VERSION,
         'producer': 'AbuseIPDB',
         'valid_time': [],
         'confidence': 'Medium',
@@ -61,6 +62,11 @@ class Config(object):
                 'url': ABUSE_IPDB_CATEGORIES_URL
             }
         ]
+    }
+    CTIM_RELATIONSHIPS_DEFAULT = {
+        'type': 'relationship',
+        'relationship_type': 'sighting-of',
+        'schema_version': CTIM_SCHEMA_VERSION
     }
     CTIM_JUDGEMENTS_NUMBER = 100
     CTIM_SIGHTINGS_NUMBER = 100
