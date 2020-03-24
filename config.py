@@ -12,6 +12,7 @@ class Config(object):
 
     ABUSE_IPDB_API_URL = 'https://api.abuseipdb.com/api/v2/{endpoint}'
     ABUSE_IPDB_UI_URL = 'https://www.abuseipdb.com/check/{ip}'
+    ABUSE_IPDB_CATEGORIES_URL = 'https://www.abuseipdb.com/categories'
 
     ABUSE_IPDB_HEALTH_CHECK_IP = '192.168.1.100'
 
@@ -47,6 +48,19 @@ class Config(object):
         'confidence': 'Medium',
         'title': 'Reported to AbuseIPDB',
         'internal': False
+    }
+    CTIM_INDICATOR_DEFAULT = {
+        'type': 'indicator',
+        'schema_version': '1.0.16',
+        'producer': 'AbuseIPDB',
+        'valid_time': [],
+        'confidence': 'Medium',
+        'external_references': [
+            {
+                'source_name': 'AbuseIPDB',
+                'url': ABUSE_IPDB_CATEGORIES_URL
+            }
+        ]
     }
     CTIM_JUDGEMENTS_NUMBER = 100
     CTIM_SIGHTINGS_NUMBER = 100

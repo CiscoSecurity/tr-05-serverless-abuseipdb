@@ -10,7 +10,8 @@ from tests.unit.mock_for_tests import (
     EXPECTED_RESPONSE_404_ERROR,
     EXPECTED_RESPONSE_500_ERROR,
     ABUSE_RESPONSE_MOCK,
-    EXPECTED_RESPONSE_OBSERVE
+    EXPECTED_RESPONSE_OBSERVE,
+    ABUSE_CATEGORIES
 )
 
 
@@ -101,9 +102,11 @@ def expected_payload(route, client):
     return payload
 
 
-def test_enrich_call_success(route, client, valid_jwt, valid_json,
+@mock.patch('api.enrich.get_categories_objects')
+def test_enrich_call_success(m, route, client, valid_jwt, valid_json,
                              abuse_api_request, expected_payload):
 
+    m.return_value = ABUSE_CATEGORIES
     abuse_api_request.return_value = abuse_api_response(ok=True)
 
     response = client.post(
@@ -120,6 +123,11 @@ def test_enrich_call_success(route, client, valid_jwt, valid_json,
     if data['data'].get('sightings'):
         assert data['data']['sightings']['docs'][0].pop('id')
         assert data['data']['sightings']['docs'][1].pop('id')
+    if data['data'].get('indicators'):
+        assert data['data']['indicators']['docs'][0].pop('id')
+        assert data['data']['indicators']['docs'][1].pop('id')
+        assert data['data']['indicators']['docs'][2].pop('id')
+        assert data['data']['indicators']['docs'][3].pop('id')
     assert data == expected_payload
 
 

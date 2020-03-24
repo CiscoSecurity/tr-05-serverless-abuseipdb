@@ -40,6 +40,25 @@ ABUSE_RESPONSE_MOCK = {
     }
 }
 
+ABUSE_CATEGORIES = {
+    '15': {
+        'title': 'title for id 15',
+        'description': 'description for id 15'
+    },
+    '18': {
+        'title': 'title for id 16',
+        'description': 'description for id 16'
+    },
+    '20': {
+        'title': 'title for id 20',
+        'description': 'description for id 20'
+    },
+    '21': {
+        'title': 'title for id 21',
+        'description': 'description for id 21'
+    }
+}
+
 EXPECTED_RESPONSE_DELIBERATE = {
     'data': {
         'verdicts': {
@@ -62,6 +81,72 @@ EXPECTED_RESPONSE_DELIBERATE = {
 
 EXPECTED_RESPONSE_OBSERVE = {
     "data": {
+        'indicators': {
+            'count': 4,
+            'docs': [
+                {
+                    'confidence': 'Medium',
+                    'description': 'description for id 15',
+                    'external_references': [
+                        {
+                            'source_name': 'AbuseIPDB',
+                            'url': 'https://www.abuseipdb.com/categories'
+                        }
+                    ],
+                    'producer': 'AbuseIPDB',
+                    'schema_version': '1.0.16',
+                    'short_description': 'description for id 15',
+                    'title': 'title for id 15',
+                    'type': 'indicator',
+                    'valid_time': []
+                },
+                {
+                    'confidence': 'Medium',
+                    'description': 'description for id 21',
+                    'external_references': [
+                        {
+                            'source_name': 'AbuseIPDB',
+                            'url': 'https://www.abuseipdb.com/categories'
+                        }
+                    ],
+                    'producer': 'AbuseIPDB',
+                    'schema_version': '1.0.16',
+                    'short_description': 'description for id 21',
+                    'title': 'title for id 21',
+                    'type': 'indicator',
+                    'valid_time': []
+                },
+                {
+                    'confidence': 'Medium',
+                    'description': 'description for id 16',
+                    'external_references': [
+                        {
+                            'source_name': 'AbuseIPDB',
+                            'url': 'https://www.abuseipdb.com/categories'
+                        }
+                    ],
+                    'producer': 'AbuseIPDB',
+                    'schema_version': '1.0.16',
+                    'short_description': 'description for id 16',
+                    'title': 'title for id 16',
+                    'type': 'indicator',
+                    'valid_time': []
+                },
+                {
+                    'confidence': 'Medium',
+                    'description': 'description for id 20',
+                    'external_references': [
+                        {'source_name': 'AbuseIPDB',
+                         'url': 'https://www.abuseipdb.com/categories'}],
+                    'producer': 'AbuseIPDB',
+                    'schema_version': '1.0.16',
+                    'short_description': 'description for id 20',
+                    'title': 'title for id 20',
+                    'type': 'indicator',
+                    'valid_time': []
+                }
+            ]
+        },
         "judgements": {
             "count": 2,
             "docs": [
