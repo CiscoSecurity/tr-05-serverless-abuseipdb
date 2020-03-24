@@ -1,4 +1,3 @@
-from functools import partial
 from datetime import datetime, timedelta
 from uuid import uuid4
 
