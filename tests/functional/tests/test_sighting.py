@@ -28,22 +28,22 @@ def test_positive_sighting_ip_observable(module_headers):
         'origin_uri': 'https://www.abuseipdb.com/check/1.1.1.1',
         'relation': 'Resolved_To',
         'source': {'value': 'cloudflare.com', 'type': 'domain'},
-        'related': {'value': '1.1.1.1', 'type': 'ip'}
+        'related': payload
     }
     for sighting in sightings['docs']:
         assert sighting['type'] == 'sighting'
-        assert sighting['schema_version'] is not None
+        assert sighting['schema_version']
         assert sighting['source'] == 'AbuseIPDB'
-        assert sighting[
-                   'source_uri'] == 'https://www.abuseipdb.com/check/1.1.1.1'
+        assert sighting['source_uri'] == (
+            'https://www.abuseipdb.com/check/1.1.1.1')
         assert sighting['confidence'] == 'Medium'
         assert sighting['title'] == 'Reported to AbuseIPDB'
-        assert sighting['description'] is not None
+        assert sighting['description']
         assert sighting['count'] == 5
         assert sighting['internal'] is False
         assert sighting['external_references'][0]['source_name'] == 'AbuseIPDB'
         assert sighting['external_references'][0]['url'] == (
             'https://www.abuseipdb.com/check/1.1.1.1')
-        assert sighting['observed_time']['start_time'] is not None
-        assert sighting['observables'][0] == {'value': '1.1.1.1', 'type': 'ip'}
+        assert sighting['observed_time']['start_time']
+        assert sighting['observables'][0] == payload
         assert sighting['relations'][0] == relations

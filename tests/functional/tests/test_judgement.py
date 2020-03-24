@@ -9,7 +9,7 @@ def test_positive_judgement_ip_observable(module_headers):
     ID: CCTRI-811-4917ba85-fa06-4f9f-b213-2f3a40861766
 
     Steps:
-        1. Send request to enrich deliberate observable endpoint
+        1. Send request to enrich observe observable endpoint
 
     Expectedresults:
         1. Check that data in response body contains expected verdict for
