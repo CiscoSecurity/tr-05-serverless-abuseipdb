@@ -139,6 +139,7 @@ def test_enrich_call_success(m, route, client, valid_jwt, valid_json,
         indicator_id_4 = indicators['docs'][3].pop('id')
 
         relationships = data['data']['relationships']
+        assert relationships['count'] == 4
         assert relationships['docs'][0].pop('id')
         assert relationships['docs'][1].pop('id')
         assert relationships['docs'][2].pop('id')
