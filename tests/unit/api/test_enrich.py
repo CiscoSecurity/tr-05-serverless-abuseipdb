@@ -31,7 +31,7 @@ def abuse_api_request():
         yield mock_request
 
 
-def abuse_api_response(*, ok, status_error=False):
+def abuse_api_response(*, ok, status_error=None):
     mock_response = mock.MagicMock()
 
     mock_response.ok = ok
