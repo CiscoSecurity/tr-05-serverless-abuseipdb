@@ -192,6 +192,31 @@ EXPECTED_RESPONSE_OBSERVE = {
                 }
             ]
         },
+        'relationships': {
+            'count': 4,
+            'docs': [
+                {
+                    'relationship_type': 'sighting-of',
+                    'schema_version': '1.0.16',
+                    'type': 'relationship'
+                },
+                {
+                    'relationship_type': 'sighting-of',
+                    'schema_version': '1.0.16',
+                    'type': 'relationship'
+                },
+                {
+                    'relationship_type': 'sighting-of',
+                    'schema_version': '1.0.16',
+                    'type': 'relationship'
+                },
+                {
+                    'relationship_type': 'sighting-of',
+                    'schema_version': '1.0.16',
+                    'type': 'relationship'
+                }
+            ]
+        },
         'sightings': {
             'count': 2,
             'docs': [

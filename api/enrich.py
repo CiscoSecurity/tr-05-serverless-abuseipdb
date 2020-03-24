@@ -337,7 +337,7 @@ def observe_observables():
             indicators.extend(extract_indicators(report, output, categories))
             sightings.append(extract_sightings(report, output))
 
-        relationships.append(extract_relationships(output))
+        relationships.extend(extract_relationships(output))
 
     relay_output = {}
 
