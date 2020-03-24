@@ -4,6 +4,7 @@ import json
 from authlib.jose import jwt
 from authlib.jose.errors import JoseError
 from flask import request, current_app, jsonify
+from bs4 import BeautifulSoup
 
 from api.errors import (
     BadRequestError,
@@ -71,7 +72,8 @@ def jsonify_errors(error):
 def get_response_data(response):
 
     if response.ok:
-        return response.json()
+        return response.text if 'DOCTYPE html' in response.text \
+            else response.json()
 
     else:
         if response.status_code == 401:
@@ -85,3 +87,29 @@ def get_response_data(response):
 
         else:
             raise AbuseUnexpectedResponseError(response)
+
+
+def get_categories_objects(categories_output):
+    """
+    Return categories id, title and description from a table from response HTML
+    document as the dict object:
+    {
+    'category_id': {
+            'title': 'some_title',
+            'description': 'some_description'
+        }
+    }
+    """
+    categories = {}
+
+    document = BeautifulSoup(categories_output, 'html.parser')
+    table = document.find_all('table')[0]
+
+    for row in table.find_all('tr'):
+        columns = row.find_all('td')
+        if columns:
+            categories[columns[0].get_text().strip()] = {
+                'title': columns[1].get_text().strip(),
+                'description': columns[2].get_text().strip()
+            }
+    return categories

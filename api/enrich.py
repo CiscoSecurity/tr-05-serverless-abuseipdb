@@ -11,14 +11,12 @@ from api.utils import (
     get_jwt,
     jsonify_data,
     url_for,
-    get_response_data
+    get_response_data,
+    get_categories_objects
 )
 
 
 enrich_api = Blueprint('enrich', __name__)
-
-
-get_observables = partial(get_json, schema=ObservableSchema(many=True))
 
 
 def validate_abuse_ipdb_output(abuse_input):
@@ -71,6 +69,18 @@ def get_abuse_ipdb_outputs(observables):
     return outputs
 
 
+def get_categories():
+
+    # get categories HTML page with categories table
+    response = requests.get(
+        url=current_app.config['ABUSE_IPDB_CATEGORIES_URL']
+    )
+
+    categories_output = get_response_data(response)
+
+    return get_categories_objects(categories_output)
+
+
 def get_disposition(output):
 
     score = output['abuseConfidenceScore']
@@ -86,142 +96,149 @@ def get_disposition(output):
     return disposition, disposition_name
 
 
-def extract_verdicts(outputs, start_time):
-    docs = []
+def extract_verdicts(output, start_time):
+    disposition, disposition_name = get_disposition(output['data'])
 
-    for output in outputs:
+    valid_time = {
+        'start_time': start_time.isoformat() + 'Z'
+    }
 
-        disposition, disposition_name = get_disposition(output['data'])
+    observable = {
+        'value': output['data']['observable']['value'],
+        'type': output['data']['observable']['type']
+    }
 
-        valid_time = {
-            'start_time': start_time.isoformat() + 'Z'
-        }
+    doc = {
+        'observable': observable,
+        'disposition': disposition,
+        'disposition_name': disposition_name,
+        'valid_time': valid_time,
+        **current_app.config['CTIM_VERDICT_DEFAULTS']
+    }
 
-        observable = {
-            'value': output['data']['observable']['value'],
-            'type': output['data']['observable']['type']
-        }
-
-        doc = {
-            'observable': observable,
-            'disposition': disposition,
-            'disposition_name': disposition_name,
-            'valid_time': valid_time,
-            **current_app.config['CTIM_VERDICT_DEFAULTS']
-        }
-
-        docs.append(doc)
-
-    return docs
+    return doc
 
 
-def extract_judgement(outputs):
-    docs = []
+def extract_judgement(report, output):
 
-    for output in outputs:
+    start_time = datetime.strptime(
+        report['reportedAt'].split('+')[0],
+        '%Y-%m-%dT%H:%M:%S'
+    )
+    end_time = start_time + timedelta(
+        days=current_app.config['CTIM_VALID_DAYS_PERIOD'])
 
-        reports = output['data']['reports']
-        reports.sort(key=lambda x: x['reportedAt'], reverse=True)
+    valid_time = {
+        'start_time': start_time.isoformat(
+            timespec='microseconds') + 'Z',
+        'end_time': end_time.isoformat(timespec='microseconds') + 'Z',
+    }
 
-        if len(reports) >= current_app.config['CTIM_JUDGEMENTS_NUMBER']:
-            reports = reports[:current_app.config['CTIM_JUDGEMENTS_NUMBER']]
+    observable = {
+        'value': output['data']['observable']['value'],
+        'type': output['data']['observable']['type']
+    }
 
-        for report in reports:
+    judgement_id = f'transient:{uuid4()}'
 
-            start_time = datetime.strptime(
-                report['reportedAt'].split('+')[0],
-                '%Y-%m-%dT%H:%M:%S'
-            )
-            end_time = start_time + timedelta(
-                days=current_app.config['CTIM_VALID_DAYS_PERIOD'])
+    doc = {
+        'id': judgement_id,
+        'observable': observable,
+        'disposition': 2,
+        'disposition_name': 'Malicious',
+        'valid_time': valid_time,
+        'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
+            ip=output['data']['observable']['value']),
+        **current_app.config['CTIM_JUDGEMENT_DEFAULTS']
+    }
 
-            valid_time = {
-                'start_time': start_time.isoformat(
-                    timespec='microseconds') + 'Z',
-                'end_time': end_time.isoformat(timespec='microseconds') + 'Z',
-            }
-
-            observable = {
-                'value': output['data']['observable']['value'],
-                'type': output['data']['observable']['type']
-            }
-
-            judgement_id = f'transient:{uuid4()}'
-
-            doc = {
-                'id': judgement_id,
-                'observable': observable,
-                'disposition': 2,
-                'disposition_name': 'Malicious',
-                'valid_time': valid_time,
-                'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
-                    ip=output['data']['observable']['value']),
-                **current_app.config['CTIM_JUDGEMENT_DEFAULTS']
-            }
-
-            docs.append(doc)
-
-    return docs
+    return doc
 
 
-def extract_sightings(outputs):
-    docs = []
+def extract_sightings(report, output):
+    start_time = datetime.strptime(
+        report['reportedAt'].split('+')[0],
+        '%Y-%m-%dT%H:%M:%S'
+    )
 
-    for output in outputs:
+    observed_time = {
+        'start_time': start_time.isoformat(
+            timespec='microseconds') + 'Z',
+    }
 
-        reports = output['data']['reports']
-        reports.sort(key=lambda x: x['reportedAt'], reverse=True)
+    observable = {
+        'value': output['data']['observable']['value'],
+        'type': output['data']['observable']['type']
+    }
 
-        if len(reports) >= current_app.config['CTIM_SIGHTINGS_NUMBER']:
-            reports = reports[:current_app.config['CTIM_SIGHTINGS_NUMBER']]
+    sighting_id = f'transient:{uuid4()}'
 
-        for report in reports:
-            start_time = datetime.strptime(
-                report['reportedAt'].split('+')[0],
-                '%Y-%m-%dT%H:%M:%S'
+    # fill the obj for make relationships
+    for category in report['categories']:
+        category_id = str(category)
+        if category_id in output['relations'].keys():
+            output['relations'][category_id]['sighting_ids'].append(
+                sighting_id
             )
 
-            observed_time = {
-                'start_time': start_time.isoformat(
-                    timespec='microseconds') + 'Z',
-            }
+    external_reference = {
+        'source_name': 'AbuseIPDB',
+        'url': current_app.config['ABUSE_IPDB_UI_URL'].format(
+            ip=output['data']['observable']['value'])
+    }
 
-            observable = {
-                'value': output['data']['observable']['value'],
-                'type': output['data']['observable']['type']
-            }
+    relation = {
+        'origin': 'AbuseIPDB Enrichment Module',
+        'source': {
+            'type': 'domain',
+            'value': output['data']['domain']
+        },
+        'related': observable,
+        'relation': 'Resolved_To',
+        'origin_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
+            ip=output['data']['observable']['value'])
+    }
 
-            sighting_id = f'transient:{uuid4()}'
+    doc = {
+        'id': sighting_id,
+        'count': output['data']['totalReports'],
+        'observables': [observable],
+        'external_references': [external_reference],
+        'observed_time': observed_time,
+        'description': report['comment'],
+        'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
+            ip=output['data']['observable']['value']),
+        'relations': [relation],
+        **current_app.config['CTIM_SIGHTING_DEFAULT']
+    }
 
-            external_reference = {
-                'source_name': 'AbuseIPDB',
-                'url': current_app.config['ABUSE_IPDB_UI_URL'].format(
-                    ip=output['data']['observable']['value'])
-            }
+    return doc
 
-            relation = {
-                'origin': 'AbuseIPDB Enrichment Module',
-                'source': {
-                    'type': 'domain',
-                    'value': output['data']['domain']
-                },
-                'related': observable,
-                'relation': 'Resolved_To',
-                'origin_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
-                        ip=output['data']['observable']['value'])
+
+def extract_indicators(report, output, categories):
+    docs = []
+    for category in report['categories']:
+        category_id = str(category)
+
+        # one indicator for each uniq category id
+        if category_id not in output['categories_ids']:
+            output['categories_ids'].append(category_id)
+
+            indicator_id = f'transient:{uuid4()}'
+
+            # obj for make relationships
+            output['relations'][category_id] = {
+                'indicator_id': indicator_id,
+                'sighting_ids': []
             }
 
             doc = {
-                'id': sighting_id,
-                'count': output['data']['totalReports'],
-                'observables': [observable],
-                'external_references': [external_reference],
-                'observed_time': observed_time,
-                'description': report['comment'],
-                'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
-                    ip=output['data']['observable']['value']),
-                'relations': [relation],
-                **current_app.config['CTIM_SIGHTING_DEFAULT']
+                'id': indicator_id,
+                'title': categories[category_id]['title'],
+                'description': categories[category_id]['description'],
+                'short_description':
+                    categories[category_id]['description'],
+                **current_app.config['CTIM_INDICATOR_DEFAULT']
             }
 
             docs.append(doc)
@@ -246,7 +263,9 @@ def deliberate_observables():
 
     start_time = datetime.utcnow()
 
-    verdicts = extract_verdicts(abuse_outputs, start_time)
+    verdicts = []
+    for output in abuse_outputs:
+        verdicts.append(extract_verdicts(output, start_time))
 
     relay_output = {}
 
@@ -269,9 +288,31 @@ def observe_observables():
 
     time_now = datetime.utcnow()
 
-    judgements = extract_judgement(abuse_outputs)
-    verdicts = extract_verdicts(abuse_outputs, time_now)
-    sightings = extract_sightings(abuse_outputs)
+    # get dict with actual abuseipdb categories with titles and descriptions
+    categories = get_categories()
+
+    verdicts = []
+    judgements = []
+    indicators = []
+    sightings = []
+
+    for output in abuse_outputs:
+
+        verdicts.append(extract_verdicts(output, time_now))
+
+        output['categories_ids'] = []
+        output['relations'] = {}
+
+        reports = output['data']['reports']
+        reports.sort(key=lambda x: x['reportedAt'], reverse=True)
+
+        if len(reports) >= current_app.config['CTIM_SIGHTINGS_NUMBER']:
+            reports = reports[:current_app.config['CTIM_SIGHTINGS_NUMBER']]
+
+        for report in reports:
+            judgements.append(extract_judgement(report, output))
+            indicators.extend(extract_indicators(report, output, categories))
+            sightings.append(extract_sightings(report, output))
 
     relay_output = {}
 
@@ -281,11 +322,13 @@ def observe_observables():
         relay_output['verdicts'] = format_docs(verdicts)
     if sightings:
         relay_output['sightings'] = format_docs(sightings)
+    if indicators:
+        relay_output['indicators'] = format_docs(indicators)
 
     return jsonify_data(relay_output)
 
 
 @enrich_api.route('/refer/observables', methods=['POST'])
 def refer_observables():
-    _ = get_observables()
+    # Not implemented
     return jsonify_data([])
