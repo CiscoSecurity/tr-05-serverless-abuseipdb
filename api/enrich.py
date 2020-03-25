@@ -231,12 +231,14 @@ def extract_indicators(report, output, categories):
                 'sighting_ids': []
             }
 
+            category = categories[category_id]
+
             doc = {
                 'id': indicator_id,
-                'title': categories[category_id]['title'],
-                'description': categories[category_id]['description'],
+                'title': category['title'],
+                'description': category['description'] or category['title'],
                 'short_description':
-                    categories[category_id]['description'],
+                    category['description'] or category['title'],
                 **current_app.config['CTIM_INDICATOR_DEFAULT']
             }
 

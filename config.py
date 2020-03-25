@@ -54,7 +54,7 @@ class Config(object):
         'type': 'indicator',
         'schema_version': CTIM_SCHEMA_VERSION,
         'producer': 'AbuseIPDB',
-        'valid_time': [],
+        'valid_time': {},
         'confidence': 'Medium',
         'external_references': [
             {
