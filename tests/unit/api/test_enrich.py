@@ -116,18 +116,43 @@ def test_enrich_call_success(m, route, client, valid_jwt, valid_json,
     assert response.status_code == HTTPStatus.OK
 
     data = response.get_json()
+
     assert data['data']['verdicts']['docs'][0].pop('valid_time')
-    if data['data'].get('judgements'):
-        assert data['data']['judgements']['docs'][0].pop('id')
-        assert data['data']['judgements']['docs'][1].pop('id')
-    if data['data'].get('sightings'):
-        assert data['data']['sightings']['docs'][0].pop('id')
-        assert data['data']['sightings']['docs'][1].pop('id')
-    if data['data'].get('indicators'):
-        assert data['data']['indicators']['docs'][0].pop('id')
-        assert data['data']['indicators']['docs'][1].pop('id')
-        assert data['data']['indicators']['docs'][2].pop('id')
-        assert data['data']['indicators']['docs'][3].pop('id')
+
+    if route == '/observe/observables':
+
+        judgements = data['data']['judgements']
+        assert judgements['count'] == 2
+        assert judgements['docs'][0].pop('id')
+        assert judgements['docs'][1].pop('id')
+
+        sightings = data['data']['sightings']
+        assert sightings['count'] == 2
+        sighting_id_1 = sightings['docs'][0].pop('id')
+        sighting_id_2 = sightings['docs'][1].pop('id')
+
+        indicators = data['data']['indicators']
+        assert indicators['count'] == 4
+        indicator_id_1 = indicators['docs'][0].pop('id')
+        indicator_id_2 = indicators['docs'][1].pop('id')
+        indicator_id_3 = indicators['docs'][2].pop('id')
+        indicator_id_4 = indicators['docs'][3].pop('id')
+
+        relationships = data['data']['relationships']
+        assert relationships['count'] == 4
+        assert relationships['docs'][0].pop('id')
+        assert relationships['docs'][1].pop('id')
+        assert relationships['docs'][2].pop('id')
+        assert relationships['docs'][3].pop('id')
+        assert relationships['docs'][0].pop('source_ref') == sighting_id_1
+        assert relationships['docs'][1].pop('source_ref') == sighting_id_1
+        assert relationships['docs'][2].pop('source_ref') == sighting_id_2
+        assert relationships['docs'][3].pop('source_ref') == sighting_id_2
+        assert relationships['docs'][0].pop('target_ref') == indicator_id_1
+        assert relationships['docs'][1].pop('target_ref') == indicator_id_2
+        assert relationships['docs'][2].pop('target_ref') == indicator_id_3
+        assert relationships['docs'][3].pop('target_ref') == indicator_id_4
+
     assert data == expected_payload
 
 
