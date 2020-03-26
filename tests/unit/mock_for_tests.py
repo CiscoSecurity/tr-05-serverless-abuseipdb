@@ -98,7 +98,8 @@ EXPECTED_RESPONSE_OBSERVE = {
                     'short_description': 'description for id 15',
                     'title': 'title for id 15',
                     'type': 'indicator',
-                    'valid_time': {}
+                    'valid_time': {},
+                    'external_ids': ['15']
                 },
                 {
                     'confidence': 'Medium',
@@ -114,7 +115,8 @@ EXPECTED_RESPONSE_OBSERVE = {
                     'short_description': 'description for id 21',
                     'title': 'title for id 21',
                     'type': 'indicator',
-                    'valid_time': {}
+                    'valid_time': {},
+                    'external_ids': ['21']
                 },
                 {
                     'confidence': 'Medium',
@@ -130,7 +132,8 @@ EXPECTED_RESPONSE_OBSERVE = {
                     'short_description': 'description for id 16',
                     'title': 'title for id 16',
                     'type': 'indicator',
-                    'valid_time': {}
+                    'valid_time': {},
+                    'external_ids': ['18']
                 },
                 {
                     'confidence': 'Medium',
@@ -146,7 +149,8 @@ EXPECTED_RESPONSE_OBSERVE = {
                     'short_description': 'description for id 20',
                     'title': 'title for id 20',
                     'type': 'indicator',
-                    'valid_time': {}
+                    'valid_time': {},
+                    'external_ids': ['20']
                 }
             ]
         },

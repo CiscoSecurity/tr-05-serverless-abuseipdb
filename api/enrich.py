@@ -239,6 +239,7 @@ def extract_indicators(report, output, categories):
                 'description': category['description'] or category['title'],
                 'short_description':
                     category['description'] or category['title'],
+                'external_ids': [category_id],
                 **current_app.config['CTIM_INDICATOR_DEFAULT']
             }
 
