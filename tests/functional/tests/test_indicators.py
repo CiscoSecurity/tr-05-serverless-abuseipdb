@@ -37,5 +37,5 @@ def test_positive_indicators_ip_observable(module_headers):
             'source_name': 'AbuseIPDB',
             'description': 'AbuseIPDB attack categories',
             'url': 'https://www.abuseipdb.com/categories',
-            'external_id': f'{indicator["external_ids"][0]}'
+            'external_id': indicator["external_ids"][0]
         }]
