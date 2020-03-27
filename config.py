@@ -9,6 +9,8 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
     ABUSE_IPDB_API_CLIENT_VERSION = VERSION
+    ABUSE_IPDB_SOURCE_NAME = 'AbuseIPDB'
+    ABUSE_IPDB_CATEGORY_DESCRIPTION = 'AbuseIPDB attack categories'
 
     ABUSE_IPDB_API_URL = 'https://api.abuseipdb.com/api/v2/{endpoint}'
     ABUSE_IPDB_UI_URL = 'https://www.abuseipdb.com/check/{ip}'
@@ -37,7 +39,7 @@ class Config(object):
     CTIM_JUDGEMENT_DEFAULTS = {
         'type': 'judgement',
         'schema_version': CTIM_SCHEMA_VERSION,
-        'source': 'AbuseIPDB',
+        'source': ABUSE_IPDB_SOURCE_NAME,
         'confidence': 'Medium',
         'priority': 85,
         'severity': 'Medium',
@@ -45,7 +47,7 @@ class Config(object):
     CTIM_SIGHTING_DEFAULT = {
         'type': 'sighting',
         'schema_version': CTIM_SCHEMA_VERSION,
-        'source': 'AbuseIPDB',
+        'source': ABUSE_IPDB_SOURCE_NAME,
         'confidence': 'Medium',
         'title': 'Reported to AbuseIPDB',
         'internal': False
@@ -53,15 +55,9 @@ class Config(object):
     CTIM_INDICATOR_DEFAULT = {
         'type': 'indicator',
         'schema_version': CTIM_SCHEMA_VERSION,
-        'producer': 'AbuseIPDB',
+        'producer': ABUSE_IPDB_SOURCE_NAME,
         'valid_time': {},
-        'confidence': 'Medium',
-        'external_references': [
-            {
-                'source_name': 'AbuseIPDB',
-                'url': ABUSE_IPDB_CATEGORIES_URL
-            }
-        ]
+        'confidence': 'Medium'
     }
     CTIM_RELATIONSHIPS_DEFAULT = {
         'type': 'relationship',
