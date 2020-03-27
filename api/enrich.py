@@ -233,6 +233,14 @@ def extract_indicators(report, output, categories):
 
             category = categories[category_id]
 
+            external_reference = {
+                'source_name': 'AbuseIPDB',
+                'url': current_app.config['ABUSE_IPDB_CATEGORIES_URL'],
+                'description':
+                    current_app.config['ABUSE_IPDB_CATEGORY_DESCRIPTION'],
+                'external_id': category_id
+            }
+
             doc = {
                 'id': indicator_id,
                 'title': category['title'],
@@ -240,6 +248,7 @@ def extract_indicators(report, output, categories):
                 'short_description':
                     category['description'] or category['title'],
                 'external_ids': [category_id],
+                'external_references': [external_reference],
                 **current_app.config['CTIM_INDICATOR_DEFAULT']
             }
 

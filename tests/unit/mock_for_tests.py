@@ -46,8 +46,8 @@ ABUSE_CATEGORIES = {
         'description': 'description for id 15'
     },
     '18': {
-        'title': 'title for id 16',
-        'description': 'description for id 16'
+        'title': 'title for id 18',
+        'description': 'description for id 18'
     },
     '20': {
         'title': 'title for id 20',
@@ -90,7 +90,9 @@ EXPECTED_RESPONSE_OBSERVE = {
                     'external_references': [
                         {
                             'source_name': 'AbuseIPDB',
-                            'url': 'https://www.abuseipdb.com/categories'
+                            'url': 'https://www.abuseipdb.com/categories',
+                            'description': 'AbuseIPDB attack categories',
+                            'external_id': '15'
                         }
                     ],
                     'producer': 'AbuseIPDB',
@@ -107,7 +109,9 @@ EXPECTED_RESPONSE_OBSERVE = {
                     'external_references': [
                         {
                             'source_name': 'AbuseIPDB',
-                            'url': 'https://www.abuseipdb.com/categories'
+                            'url': 'https://www.abuseipdb.com/categories',
+                            'description': 'AbuseIPDB attack categories',
+                            'external_id': '21'
                         }
                     ],
                     'producer': 'AbuseIPDB',
@@ -120,17 +124,19 @@ EXPECTED_RESPONSE_OBSERVE = {
                 },
                 {
                     'confidence': 'Medium',
-                    'description': 'description for id 16',
+                    'description': 'description for id 18',
                     'external_references': [
                         {
                             'source_name': 'AbuseIPDB',
-                            'url': 'https://www.abuseipdb.com/categories'
+                            'url': 'https://www.abuseipdb.com/categories',
+                            'description': 'AbuseIPDB attack categories',
+                            'external_id': '18'
                         }
                     ],
                     'producer': 'AbuseIPDB',
                     'schema_version': '1.0.16',
-                    'short_description': 'description for id 16',
-                    'title': 'title for id 16',
+                    'short_description': 'description for id 18',
+                    'title': 'title for id 18',
                     'type': 'indicator',
                     'valid_time': {},
                     'external_ids': ['18']
@@ -141,7 +147,9 @@ EXPECTED_RESPONSE_OBSERVE = {
                     'external_references': [
                         {
                             'source_name': 'AbuseIPDB',
-                            'url': 'https://www.abuseipdb.com/categories'
+                            'url': 'https://www.abuseipdb.com/categories',
+                            'description': 'AbuseIPDB attack categories',
+                            'external_id': '20'
                         }
                     ],
                     'producer': 'AbuseIPDB',
