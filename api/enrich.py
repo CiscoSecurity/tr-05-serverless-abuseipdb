@@ -23,6 +23,8 @@ def validate_abuse_ipdb_output(abuse_input):
 
     headers = {
         'Accept': 'application/json',
+        'User-Agent': ('Cisco Threat Response Integrations '
+                       '<tr-integrations-support@cisco.com>'),
         'Key': get_jwt().get('key', '')
     }
 
