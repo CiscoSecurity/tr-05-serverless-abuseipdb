@@ -97,6 +97,25 @@ def get_disposition(output):
     return disposition, disposition_name
 
 
+def get_relation(output, observable):
+    if output['data']['domain']:
+        relation = {
+            'origin': 'AbuseIPDB Enrichment Module',
+            'source': {
+                'type': 'domain',
+                'value': output['data']['domain']
+            },
+            'related': observable,
+            'relation': 'Resolved_To',
+            'origin_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
+                ip=output['data']['observable']['value'])
+        }
+    else:
+        relation = {}
+
+    return relation
+
+
 def extract_verdicts(output, start_time):
     disposition, disposition_name = get_disposition(output['data'])
 
@@ -188,17 +207,7 @@ def extract_sightings(report, output):
             ip=output['data']['observable']['value'])
     }
 
-    relation = {
-        'origin': 'AbuseIPDB Enrichment Module',
-        'source': {
-            'type': 'domain',
-            'value': output['data']['domain']
-        },
-        'related': observable,
-        'relation': 'Resolved_To',
-        'origin_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
-            ip=output['data']['observable']['value'])
-    }
+    relation = get_relation(output, observable)
 
     doc = {
         'id': sighting_id,
@@ -209,7 +218,7 @@ def extract_sightings(report, output):
         'description': report['comment'],
         'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
             ip=output['data']['observable']['value']),
-        'relations': [relation],
+        'relations': [relation] if relation else [],
         **current_app.config['CTIM_SIGHTING_DEFAULT']
     }
 
