@@ -26,6 +26,7 @@ def test_positive_judgement_ip_observable(module_headers):
     assert judgements['count'] == 1
     for judgement in judgements['docs']:
         assert judgement['type'] == 'judgement'
+        assert judgement['id']
         assert judgement['disposition'] == 2
         assert judgement['disposition_name'] == 'Malicious'
         assert judgement['source'] == 'AbuseIPDB'
