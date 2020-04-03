@@ -32,6 +32,7 @@ def test_positive_sighting_ip_observable(module_headers):
     }
     for sighting in sightings['docs']:
         assert sighting['type'] == 'sighting'
+        assert sighting['id']
         assert sighting['schema_version']
         assert sighting['source'] == 'AbuseIPDB'
         assert sighting['source_uri'] == (

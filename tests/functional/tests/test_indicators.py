@@ -26,6 +26,7 @@ def test_positive_indicators_ip_observable(module_headers):
     assert indicators['count'] == 5
     for indicator in indicators['docs']:
         assert indicator['type'] == 'indicator'
+        assert indicator['id']
         assert indicator['schema_version']
         assert indicator['producer'] == 'AbuseIPDB'
         assert indicator['valid_time'] == {}
