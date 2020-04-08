@@ -51,6 +51,22 @@ As a TR Relay Module:
 variables from a `.env` file (i.e.`TR_API_CLIENT_ID`, `TR_API_CLIENT_PASSWORD`,
 `URL`, `JWT`) and pass them to the corresponding command.
 
+## Details
+The AbuseIPDB Relay API implements the following list of endpoints:
+* `/deliberate/observables`
+* `/observe/observables`,
+* `/health`.
+
+Other endpoints (`/refer/observables`, `/respond/observables`, `/respond/trigger`) 
+returns empty responses.
+
+Supported types of observables:
+* `ip`,
+* `ipv6`,
+* `domain`
+
+Other types of observables will be ignored.
+
 ## Usage
 
 ```bash
