@@ -1,4 +1,5 @@
 from typing import Optional
+from http import HTTPStatus
 import json
 
 from authlib.jose import jwt
@@ -76,13 +77,16 @@ def get_response_data(response):
             else response.json()
 
     else:
-        if response.status_code == 401:
+        if response.status_code == HTTPStatus.UNAUTHORIZED:
             raise AbuseInvalidCredentialsError()
 
-        if response.status_code == 404:
+        if response.status_code == HTTPStatus.NOT_FOUND:
             raise AbuseNotFoundError()
 
-        if response.status_code == 500:
+        if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+            return {}
+
+        if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             raise AbuseInternalServerError()
 
         else:
