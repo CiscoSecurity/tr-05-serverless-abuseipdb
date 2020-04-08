@@ -67,6 +67,19 @@ Supported types of observables:
 
 Other types of observables will be ignored.
 
+##JWT Generating
+
+Payload for encryption must have structure:
+```
+{
+"key": "your_api_key_for_3rd_party"
+}
+```
+
+After encryption set your `SECRET_KEY` environment 
+variable in AWS lambda for successful decryption in Relay API.
+
+
 ## Usage
 
 ```bash
