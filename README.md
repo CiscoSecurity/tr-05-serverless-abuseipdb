@@ -79,7 +79,6 @@ Payload for encryption must have structure:
 After encryption set your `SECRET_KEY` environment 
 variable in AWS lambda for successful decryption in Relay API.
 
-
 ## Usage
 
 ```bash
