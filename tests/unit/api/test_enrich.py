@@ -96,7 +96,7 @@ def expected_payload(route, client):
 
 
 @mock.patch('api.enrich.get_categories_objects')
-def test_enrich_call_success_2(categories_mock, route, client, valid_jwt,
+def test_enrich_call_success(categories_mock, route, client, valid_jwt,
                              valid_json, abuse_api_request, expected_payload):
 
     categories_mock.return_value = ABUSE_CATEGORIES
@@ -151,7 +151,7 @@ def test_enrich_call_success_2(categories_mock, route, client, valid_jwt,
 
 @mock.patch('api.enrich.get_categories_objects')
 def test_enrich_call_success_limit_1(categories_mock, route, client, valid_jwt,
-                             valid_json, abuse_api_request, expected_payload):
+                                     valid_json, abuse_api_request):
 
     categories_mock.return_value = ABUSE_CATEGORIES
     abuse_api_request.return_value = abuse_api_response(ok=True)

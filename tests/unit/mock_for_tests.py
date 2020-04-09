@@ -470,7 +470,8 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
                     ],
                     'schema_version': '1.0.16',
                     'source': 'AbuseIPDB',
-                    'source_uri': 'https://www.abuseipdb.com/check/118.25.6.39',
+                    'source_uri':
+                        'https://www.abuseipdb.com/check/118.25.6.39',
                     'title': 'Reported to AbuseIPDB',
                     'type': 'sighting'
                 }
