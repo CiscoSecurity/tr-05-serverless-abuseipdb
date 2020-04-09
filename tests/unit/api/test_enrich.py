@@ -40,15 +40,7 @@ def abuse_api_response(*, ok, status_error=None):
         payload = ABUSE_RESPONSE_MOCK
 
     else:
-
-        if status_error == 404:
-            mock_response.status_code = 404
-
-        elif status_error == 500:
-            mock_response.status_code = 500
-
-        else:
-            mock_response.status_code = 401
+        mock_response.status_code = status_error
 
     mock_response.json = lambda: payload
 
@@ -159,7 +151,8 @@ def test_enrich_call_success(m, route, client, valid_jwt, valid_json,
 def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
                                 abuse_api_request):
 
-    abuse_api_request.return_value = abuse_api_response(ok=False)
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False, status_error=HTTPStatus.UNAUTHORIZED)
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
@@ -174,8 +167,8 @@ def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
 def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
                                abuse_api_request):
 
-    abuse_api_request.return_value = abuse_api_response(ok=False,
-                                                        status_error=404)
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False, status_error=HTTPStatus.NOT_FOUND)
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
@@ -190,8 +183,8 @@ def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
 def test_enrich_call_500_error(route, client, valid_jwt, valid_json,
                                abuse_api_request):
 
-    abuse_api_request.return_value = abuse_api_response(ok=False,
-                                                        status_error=500)
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False, status_error=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
@@ -201,3 +194,19 @@ def test_enrich_call_500_error(route, client, valid_jwt, valid_json,
 
     data = response.get_json()
     assert data == EXPECTED_RESPONSE_500_ERROR
+
+
+def test_enrich_call_422_error(route, client, valid_jwt, valid_json,
+                               abuse_api_request):
+
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False, status_error=HTTPStatus.UNPROCESSABLE_ENTITY)
+
+    response = client.post(
+        route, headers=headers(valid_jwt), json=valid_json
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    data = response.get_json()
+    assert data == {'data': {}}

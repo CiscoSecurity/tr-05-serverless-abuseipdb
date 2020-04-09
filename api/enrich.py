@@ -64,8 +64,9 @@ def get_abuse_ipdb_outputs(observables):
         abuse_ipdb_output = validate_abuse_ipdb_output(
             observable['value'])
 
-        abuse_ipdb_output['data']['observable'] = observable
-        outputs.append(abuse_ipdb_output)
+        if abuse_ipdb_output:
+            abuse_ipdb_output['data']['observable'] = observable
+            outputs.append(abuse_ipdb_output)
 
     return outputs
 
@@ -330,6 +331,9 @@ def observe_observables():
         return jsonify_data({})
 
     abuse_outputs = get_abuse_ipdb_outputs(observables)
+
+    if not abuse_outputs:
+        return jsonify_data({})
 
     time_now = datetime.utcnow()
 
