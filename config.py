@@ -64,8 +64,11 @@ class Config(object):
         'relationship_type': 'sighting-of',
         'schema_version': CTIM_SCHEMA_VERSION
     }
-    CTIM_JUDGEMENTS_NUMBER = 100
-    CTIM_SIGHTINGS_NUMBER = 100
+
+    CTIM_DEFAULT_ENTITIES_LIMIT = 100
+    CTIM_MAX_ENTITIES_LIMIT = \
+        int(os.environ.get('CTR_ENTITIES_LIMIT', CTIM_DEFAULT_ENTITIES_LIMIT))
+
     CTIM_VALID_DAYS_PERIOD = 7
 
     CTIM_DISPOSITIONS = {
