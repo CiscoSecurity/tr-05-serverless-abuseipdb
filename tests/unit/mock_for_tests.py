@@ -343,6 +343,158 @@ EXPECTED_RESPONSE_OBSERVE = {
 }
 
 
+EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
+    'data': {
+        'indicators': {
+            'count': 2,
+            'docs': [
+                {
+                    'confidence': 'Medium',
+                    'description': 'description for id 15',
+                    'external_ids': ['15'],
+                    'external_references': [
+                        {
+                            'description': 'AbuseIPDB attack categories',
+                            'external_id': '15',
+                            'source_name': 'AbuseIPDB',
+                            'url': 'https://www.abuseipdb.com/categories'
+                        }
+                    ],
+                    'producer': 'AbuseIPDB',
+                    'schema_version': '1.0.16',
+                    'short_description': 'description for id 15',
+                    'title': 'title for id 15',
+                    'type': 'indicator',
+                    'valid_time': {}
+                },
+                {
+                    'confidence': 'Medium',
+                    'description': 'description for id 21',
+                    'external_ids': ['21'],
+                    'external_references': [
+                        {
+                            'description': 'AbuseIPDB attack categories',
+                            'external_id': '21',
+                            'source_name': 'AbuseIPDB',
+                            'url': 'https://www.abuseipdb.com/categories'
+                        }
+                    ],
+                    'producer': 'AbuseIPDB',
+                    'schema_version': '1.0.16',
+                    'short_description': 'description for id 21',
+                    'title': 'title for id 21',
+                    'type': 'indicator',
+                    'valid_time': {}
+                }
+            ]
+        },
+        'judgements': {
+            'count': 1,
+            'docs': [
+                {
+                    'confidence': 'Medium',
+                    'disposition': 2,
+                    'disposition_name': 'Malicious',
+                    'observable': {
+                        'type': 'ip',
+                        'value': '118.25.6.39'
+                    },
+                    'priority': 85,
+                    'schema_version': '1.0.16',
+                    'severity': 'Medium',
+                    'source': 'AbuseIPDB',
+                    'source_uri':
+                        'https://www.abuseipdb.com/check/118.25.6.39',
+                    'type': 'judgement',
+                    'valid_time': {
+                        'end_time': '2020-03-17T23:11:57.000000Z',
+                        'start_time': '2020-03-10T23:11:57.000000Z'
+                    }
+                }
+            ]
+        },
+        'relationships': {
+            'count': 2,
+            'docs': [
+                {
+                    'relationship_type': 'sighting-of',
+                    'schema_version': '1.0.16',
+                    'type': 'relationship'
+                },
+                {
+                    'relationship_type': 'sighting-of',
+                    'schema_version': '1.0.16',
+                    'type': 'relationship'
+                }
+            ]
+        },
+        'sightings': {
+            'count': 1,
+            'docs': [
+                {
+                    'confidence': 'Medium',
+                    'count': 2,
+                    'description': 'ssh',
+                    'external_references': [
+                        {
+                            'source_name': 'AbuseIPDB',
+                            'url':
+                                'https://www.abuseipdb.com/check/118.25.6.39'
+                        }
+                    ],
+                    'internal': False,
+                    'observables': [
+                        {
+                            'type': 'ip',
+                            'value': '118.25.6.39'
+                        }
+                    ],
+                    'observed_time': {
+                        'start_time': '2020-03-10T23:11:57.000000Z'
+                    },
+                    'relations': [
+                        {
+                            'origin': 'AbuseIPDB Enrichment Module',
+                            'origin_uri':
+                                'https://www.abuseipdb.com/check/118.25.6.39',
+                            'related': {
+                                'type': 'ip',
+                                'value': '118.25.6.39'
+                            },
+                            'relation': 'Resolved_To',
+                            'source': {
+                                'type': 'domain',
+                                'value': 'chinatelecom.com.cn'
+                            }
+                        }
+                    ],
+                    'schema_version': '1.0.16',
+                    'source': 'AbuseIPDB',
+                    'source_uri':
+                        'https://www.abuseipdb.com/check/118.25.6.39',
+                    'title': 'Reported to AbuseIPDB',
+                    'type': 'sighting'
+                }
+            ]
+        },
+        'verdicts': {
+            'count': 1,
+            'docs': [
+                {
+                    'disposition': 1,
+                    'disposition_name': 'Clean',
+                    'observable': {
+                        'type': 'ip',
+                        'value': '118.25.6.39'
+                    },
+                    'type': 'verdict'
+                }
+            ]
+        }
+    }
+}
+
+
 EXPECTED_RESPONSE_AUTH_ERROR = {
     'errors': [
         {

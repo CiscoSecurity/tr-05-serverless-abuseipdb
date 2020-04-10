@@ -11,7 +11,8 @@ from tests.unit.mock_for_tests import (
     EXPECTED_RESPONSE_500_ERROR,
     ABUSE_RESPONSE_MOCK,
     EXPECTED_RESPONSE_OBSERVE,
-    ABUSE_CATEGORIES
+    ABUSE_CATEGORIES,
+    EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1
 )
 
 
@@ -95,10 +96,10 @@ def expected_payload(route, client):
 
 
 @mock.patch('api.enrich.get_categories_objects')
-def test_enrich_call_success(m, route, client, valid_jwt, valid_json,
-                             abuse_api_request, expected_payload):
+def test_enrich_call_success(categories_mock, route, client, valid_jwt,
+                             valid_json, abuse_api_request, expected_payload):
 
-    m.return_value = ABUSE_CATEGORIES
+    categories_mock.return_value = ABUSE_CATEGORIES
     abuse_api_request.return_value = abuse_api_response(ok=True)
 
     response = client.post(
@@ -146,6 +147,51 @@ def test_enrich_call_success(m, route, client, valid_jwt, valid_json,
         assert relationships['docs'][3].pop('target_ref') == indicator_id_4
 
     assert data == expected_payload
+
+
+@mock.patch('api.enrich.get_categories_objects')
+def test_enrich_call_success_limit_1(categories_mock, route, client, valid_jwt,
+                                     valid_json, abuse_api_request):
+
+    categories_mock.return_value = ABUSE_CATEGORIES
+    abuse_api_request.return_value = abuse_api_response(ok=True)
+
+    if route == '/observe/observables':
+        client.application.config['CTIM_MAX_ENTITIES_LIMIT'] = 1
+
+        response = client.post(
+            route, headers=headers(valid_jwt), json=valid_json
+        )
+
+        assert response.status_code == HTTPStatus.OK
+
+        data = response.get_json()
+
+        assert data['data']['verdicts']['docs'][0].pop('valid_time')
+
+        judgements = data['data']['judgements']
+        assert judgements['count'] == 1
+        assert judgements['docs'][0].pop('id')
+
+        sightings = data['data']['sightings']
+        assert sightings['count'] == 1
+        sighting_id_1 = sightings['docs'][0].pop('id')
+
+        indicators = data['data']['indicators']
+        assert indicators['count'] == 2
+        indicator_id_1 = indicators['docs'][0].pop('id')
+        indicator_id_2 = indicators['docs'][1].pop('id')
+
+        relationships = data['data']['relationships']
+        assert relationships['count'] == 2
+        assert relationships['docs'][0].pop('id')
+        assert relationships['docs'][1].pop('id')
+        assert relationships['docs'][0].pop('source_ref') == sighting_id_1
+        assert relationships['docs'][1].pop('source_ref') == sighting_id_1
+        assert relationships['docs'][0].pop('target_ref') == indicator_id_1
+        assert relationships['docs'][1].pop('target_ref') == indicator_id_2
+
+        assert data == EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1
 
 
 def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,

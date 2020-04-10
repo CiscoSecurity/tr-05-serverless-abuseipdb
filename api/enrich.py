@@ -356,8 +356,8 @@ def observe_observables():
         reports = output['data']['reports']
         reports.sort(key=lambda x: x['reportedAt'], reverse=True)
 
-        if len(reports) >= current_app.config['CTIM_SIGHTINGS_NUMBER']:
-            reports = reports[:current_app.config['CTIM_SIGHTINGS_NUMBER']]
+        if len(reports) >= current_app.config['CTIM_MAX_ENTITIES_LIMIT']:
+            reports = reports[:current_app.config['CTIM_MAX_ENTITIES_LIMIT']]
 
         for report in reports:
             judgements.append(extract_judgement(report, output))

@@ -67,7 +67,7 @@ Supported types of observables:
 
 Other types of observables will be ignored.
 
-##JWT Generating
+## JWT Generating
 
 Payload for encryption must have structure:
 ```
