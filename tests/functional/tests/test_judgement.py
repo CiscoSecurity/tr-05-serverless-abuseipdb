@@ -17,13 +17,13 @@ def test_positive_judgement_ip_observable(module_headers):
 
     Importance: Critical
     """
-    payload = {'type': 'ip', 'value': '127.0.0.1'}
+    payload = {'type': 'ip', 'value': '192.168.1.1'}
     response = enrich_observe_observables(
         payload=[payload],
         **{'headers': module_headers}
     )['data']
     judgements = get_observables(response, 'Abuse IPDB')['data']['judgements']
-    assert judgements['count'] == 26
+    assert judgements['count'] == 30
     for judgement in judgements['docs']:
         assert judgement['type'] == 'judgement'
         assert judgement['id']
