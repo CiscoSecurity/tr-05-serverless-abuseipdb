@@ -83,11 +83,3 @@ class Config(object):
         'Malicious': 2,
         'Unknown': 5
     }
-
-    @property
-    def get_limits(self):
-        entities_limit = self.CTIM_DEFAULT_ENTITIES_LIMIT
-
-
-        return entities_limit
-
