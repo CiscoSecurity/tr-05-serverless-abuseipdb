@@ -117,6 +117,15 @@ def get_relation(output, observable):
     return relation
 
 
+def get_reason(categories, ids):
+    categories_titles = [
+        categories[str(id)]['title'] or categories[str(id)]['description']
+        for id in ids
+    ]
+
+    return ', '.join(categories_titles)
+
+
 def extract_verdicts(output, start_time):
     disposition, disposition_name = get_disposition(output['data'])
 
@@ -140,7 +149,7 @@ def extract_verdicts(output, start_time):
     return doc
 
 
-def extract_judgement(report, output):
+def extract_judgement(report, output, categories):
 
     start_time = datetime.strptime(
         report['reportedAt'].split('+')[0],
@@ -170,6 +179,7 @@ def extract_judgement(report, output):
         'valid_time': valid_time,
         'source_uri': current_app.config['ABUSE_IPDB_UI_URL'].format(
             ip=output['data']['observable']['value']),
+        'reason': get_reason(categories, report['categories']),
         **current_app.config['CTIM_JUDGEMENT_DEFAULTS']
     }
 
@@ -360,7 +370,7 @@ def observe_observables():
             reports = reports[:current_app.config['CTIM_MAX_ENTITIES_LIMIT']]
 
         for report in reports:
-            judgements.append(extract_judgement(report, output))
+            judgements.append(extract_judgement(report, output, categories))
             indicators.extend(extract_indicators(report, output, categories))
             sightings.append(extract_sightings(report, output))
 
