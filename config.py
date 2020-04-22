@@ -66,8 +66,14 @@ class Config(object):
     }
 
     CTIM_DEFAULT_ENTITIES_LIMIT = 100
-    CTIM_MAX_ENTITIES_LIMIT = \
-        int(os.environ.get('CTR_ENTITIES_LIMIT', CTIM_DEFAULT_ENTITIES_LIMIT))
+    CTIM_MAX_ENTITIES_LIMIT = CTIM_DEFAULT_ENTITIES_LIMIT
+
+    try:
+        limit = int(os.environ.get('CTR_ENTITIES_LIMIT'))
+        if limit > 0:
+            CTIM_MAX_ENTITIES_LIMIT = limit
+    except (ValueError, TypeError):
+        pass
 
     CTIM_VALID_DAYS_PERIOD = 7
 
@@ -77,3 +83,11 @@ class Config(object):
         'Malicious': 2,
         'Unknown': 5
     }
+
+    @property
+    def get_limits(self):
+        entities_limit = self.CTIM_DEFAULT_ENTITIES_LIMIT
+
+
+        return entities_limit
+
