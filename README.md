@@ -67,6 +67,8 @@ Supported types of observables:
 
 Other types of observables will be ignored.
 
+Response data from AbuseIPDB is returned only for the last 30 days from the request sending.
+
 ## JWT Generating
 
 Payload for encryption must have structure:
