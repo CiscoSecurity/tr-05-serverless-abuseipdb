@@ -239,7 +239,7 @@ EXPECTED_RESPONSE_OBSERVE = {
             'docs': [
                 {
                     'confidence': 'Medium',
-                    'count': 2,
+                    'count': 1,
                     'description': 'ssh',
                     'external_references': [
                         {
@@ -283,7 +283,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                 },
                 {
                     'confidence': 'Medium',
-                    'count': 2,
+                    'count': 1,
                     'description': 'SSH login attempts with user root.',
                     'external_references': [
                         {
@@ -432,11 +432,11 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
             ]
         },
         'sightings': {
-            'count': 1,
+            'count': 2,
             'docs': [
                 {
                     'confidence': 'Medium',
-                    'count': 2,
+                    'count': 1,
                     'description': 'ssh',
                     'external_references': [
                         {
