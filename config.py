@@ -65,13 +65,13 @@ class Config(object):
         'schema_version': CTIM_SCHEMA_VERSION
     }
 
-    CTIM_DEFAULT_ENTITIES_LIMIT = 100
-    CTIM_MAX_ENTITIES_LIMIT = CTIM_DEFAULT_ENTITIES_LIMIT
+    CTR_DEFAULT_ENTITIES_LIMIT = 100
+    CTR_ENTITIES_LIMIT = CTR_DEFAULT_ENTITIES_LIMIT
 
     try:
         limit = int(os.environ.get('CTR_ENTITIES_LIMIT'))
         if limit > 0:
-            CTIM_MAX_ENTITIES_LIMIT = limit
+            CTR_ENTITIES_LIMIT = limit
     except (ValueError, TypeError):
         pass
 
