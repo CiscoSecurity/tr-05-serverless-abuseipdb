@@ -174,6 +174,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                         "value": "118.25.6.39"
                     },
                     "priority": 85,
+                    "reason": "title for id 15, title for id 21",
                     "schema_version": "1.0.16",
                     "severity": "Medium",
                     "source": "AbuseIPDB",
@@ -194,6 +195,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                         "value": "118.25.6.39"
                     },
                     "priority": 85,
+                    "reason": "title for id 18, title for id 20",
                     "schema_version": "1.0.16",
                     "severity": "Medium",
                     "source": "AbuseIPDB",
@@ -400,6 +402,7 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
                         'value': '118.25.6.39'
                     },
                     'priority': 85,
+                    "reason": "title for id 15, title for id 21",
                     'schema_version': '1.0.16',
                     'severity': 'Medium',
                     'source': 'AbuseIPDB',
