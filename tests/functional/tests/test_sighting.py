@@ -40,7 +40,7 @@ def test_positive_sighting_ip_observable(module_headers):
         assert sighting['confidence'] == 'Medium'
         assert sighting['title'] == 'Reported to AbuseIPDB'
         assert sighting['description']
-        assert sighting['count'] == 11
+        assert sighting['count'] == 10
         assert sighting['internal'] is False
         assert sighting['external_references'][0]['source_name'] == 'AbuseIPDB'
         assert sighting['external_references'][0]['url'] == (

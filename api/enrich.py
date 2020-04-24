@@ -222,7 +222,7 @@ def extract_sightings(report, output):
 
     doc = {
         'id': sighting_id,
-        'count': output['data']['totalReports'],
+        'count': 1,
         'observables': [observable],
         'external_references': [external_reference],
         'observed_time': observed_time,
@@ -355,8 +355,11 @@ def observe_observables():
     indicators = []
     sightings = []
     relationships = []
+    sightings_count = 0
 
     for output in abuse_outputs:
+
+        sightings_count += output['data']['totalReports']
 
         verdicts.append(extract_verdicts(output, time_now))
 
@@ -384,6 +387,7 @@ def observe_observables():
         relay_output['verdicts'] = format_docs(verdicts)
     if sightings:
         relay_output['sightings'] = format_docs(sightings)
+        relay_output['sightings']['count'] = sightings_count
     if indicators:
         relay_output['indicators'] = format_docs(indicators)
     if relationships:
