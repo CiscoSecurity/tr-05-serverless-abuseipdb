@@ -157,7 +157,7 @@ def test_enrich_call_success_limit_1(categories_mock, route, client, valid_jwt,
     abuse_api_request.return_value = abuse_api_response(ok=True)
 
     if route == '/observe/observables':
-        client.application.config['CTIM_MAX_ENTITIES_LIMIT'] = 1
+        client.application.config['CTR_ENTITIES_LIMIT'] = 1
 
         response = client.post(
             route, headers=headers(valid_jwt), json=valid_json
