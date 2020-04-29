@@ -12,7 +12,9 @@ from tests.unit.mock_for_tests import (
     ABUSE_RESPONSE_MOCK,
     EXPECTED_RESPONSE_OBSERVE,
     ABUSE_CATEGORIES,
-    EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1
+    EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1,
+    ABUSE_429_RESPONSE,
+    EXPECTED_RESPONSE_429_ERROR
 )
 
 
@@ -32,16 +34,21 @@ def abuse_api_request():
         yield mock_request
 
 
-def abuse_api_response(*, ok, status_error=None):
+def abuse_api_response(*, ok, status_error=None, payload=None):
     mock_response = mock.MagicMock()
+
+    if payload:
+        payload = payload
 
     mock_response.ok = ok
 
     if ok:
-        payload = ABUSE_RESPONSE_MOCK
+        if not payload:
+            payload = ABUSE_RESPONSE_MOCK
 
     else:
         mock_response.status_code = status_error
+        mock_response.text = str(payload)
 
     mock_response.json = lambda: payload
 
@@ -256,3 +263,22 @@ def test_enrich_call_422_error(route, client, valid_jwt, valid_json,
 
     data = response.get_json()
     assert data == {'data': {}}
+
+
+def test_enrich_call_429_error(route, client, valid_jwt, valid_json,
+                               abuse_api_request):
+
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False,
+        status_error=HTTPStatus.TOO_MANY_REQUESTS,
+        payload=ABUSE_429_RESPONSE
+    )
+
+    response = client.post(
+        route, headers=headers(valid_jwt), json=valid_json
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    data = response.get_json()
+    assert data == EXPECTED_RESPONSE_429_ERROR
