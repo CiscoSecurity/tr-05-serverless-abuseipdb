@@ -48,7 +48,7 @@ class AbuseInvalidCredentialsError(TRError):
 
 class AbuseUnexpectedResponseError(TRError):
     def __init__(self, payload):
-        error_payload = json.loads(payload.text).get('errors', [])
+        error_payload = payload.json().get('errors', [])
 
         super().__init__(
             UNKNOWN,
@@ -58,7 +58,7 @@ class AbuseUnexpectedResponseError(TRError):
 
 class AbuseTooManyRequestsError(TRError):
     def __init__(self, payload):
-        error_payload = json.loads(payload.text)['errors']['detail']
+        error_payload = payload.json()['errors'][0]['detail']
 
         super().__init__(
             TOO_MANY_REQUESTS,
