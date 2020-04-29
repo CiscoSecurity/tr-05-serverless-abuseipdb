@@ -5,6 +5,7 @@ PERMISSION_DENIED = 'permission denied'
 UNKNOWN = 'unknown'
 NOT_FOUND = 'not found'
 INTERNAL = 'internal error'
+TOO_MANY_REQUESTS = 'too many requests'
 
 
 class TRError(Exception):
@@ -51,6 +52,16 @@ class AbuseUnexpectedResponseError(TRError):
 
         super().__init__(
             UNKNOWN,
+            str(error_payload)
+        )
+
+
+class AbuseTooManyRequestsError(TRError):
+    def __init__(self, payload):
+        error_payload = json.loads(payload.text)['errors']['detail']
+
+        super().__init__(
+            TOO_MANY_REQUESTS,
             str(error_payload)
         )
 
