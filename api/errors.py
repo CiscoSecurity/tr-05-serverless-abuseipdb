@@ -1,5 +1,3 @@
-import json
-
 INVALID_ARGUMENT = 'invalid argument'
 PERMISSION_DENIED = 'permission denied'
 UNKNOWN = 'unknown'
