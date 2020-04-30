@@ -12,7 +12,8 @@ from api.errors import (
     AbuseInvalidCredentialsError,
     AbuseNotFoundError,
     AbuseInternalServerError,
-    AbuseUnexpectedResponseError
+    AbuseUnexpectedResponseError,
+    AbuseTooManyRequestsError
 )
 
 
@@ -88,6 +89,9 @@ def get_response_data(response):
 
         if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             raise AbuseInternalServerError()
+
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            raise AbuseTooManyRequestsError(response)
 
         else:
             raise AbuseUnexpectedResponseError(response)

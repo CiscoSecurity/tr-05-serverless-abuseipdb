@@ -1,10 +1,9 @@
-import json
-
 INVALID_ARGUMENT = 'invalid argument'
 PERMISSION_DENIED = 'permission denied'
 UNKNOWN = 'unknown'
 NOT_FOUND = 'not found'
 INTERNAL = 'internal error'
+TOO_MANY_REQUESTS = 'too many requests'
 
 
 class TRError(Exception):
@@ -47,10 +46,20 @@ class AbuseInvalidCredentialsError(TRError):
 
 class AbuseUnexpectedResponseError(TRError):
     def __init__(self, payload):
-        error_payload = json.loads(payload.text).get('errors', [])
+        error_payload = payload.json().get('errors', [])
 
         super().__init__(
             UNKNOWN,
+            str(error_payload)
+        )
+
+
+class AbuseTooManyRequestsError(TRError):
+    def __init__(self, payload):
+        error_payload = payload.json()['errors'][0]['detail']
+
+        super().__init__(
+            TOO_MANY_REQUESTS,
             str(error_payload)
         )
 

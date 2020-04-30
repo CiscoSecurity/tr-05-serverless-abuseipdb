@@ -59,6 +59,16 @@ ABUSE_CATEGORIES = {
     }
 }
 
+ABUSE_429_RESPONSE = {
+    "errors": [
+        {
+            "detail": "Daily rate limit of 1000 requests exceeded for this"
+                      " endpoint. See headers for additional details.",
+            "status": 429
+        }
+    ]
+}
+
 EXPECTED_RESPONSE_DELIBERATE = {
     'data': {
         'verdicts': {
@@ -523,6 +533,17 @@ EXPECTED_RESPONSE_500_ERROR = {
         {
             'code': 'internal error',
             'message': 'The Abuse IPDB internal error.',
+            'type': 'fatal'
+        }
+    ]
+}
+
+EXPECTED_RESPONSE_429_ERROR = {
+    'errors': [
+        {
+            'code': 'too many requests',
+            'message': 'Daily rate limit of 1000 requests exceeded for this '
+                       'endpoint. See headers for additional details.',
             'type': 'fatal'
         }
     ]

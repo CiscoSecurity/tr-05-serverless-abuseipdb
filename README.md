@@ -69,6 +69,18 @@ Other types of observables will be ignored.
 
 Response data from AbuseIPDB is returned only for the last 30 days from the request sending.
 
+AbuseIPDB API has a daily limit of requests, which depends on the type of account:
+
+| Type of account | requests limit | 
+| --- | --- | 
+| Standard | 1000 requests/day |
+| Webmaster | 3000 requests/day |
+| Supporter | 5000 requests/day |
+| Basic Subscription | 10000 requests/day |
+| Premium Subscription | 50000 requests/day |
+
+If the limit is exceeded then an error message will be returned.
+
 ## JWT Generating
 
 Payload for encryption must have structure:
