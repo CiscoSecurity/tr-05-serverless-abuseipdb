@@ -181,7 +181,7 @@ def test_enrich_call_success_limit_1(categories_mock, route, client, valid_jwt,
         assert judgements['docs'][0].pop('id')
 
         sightings = data['data']['sightings']
-        assert sightings['count'] == 2
+        assert sightings['count'] == 1
         sighting_id_1 = sightings['docs'][0].pop('id')
 
         indicators = data['data']['indicators']

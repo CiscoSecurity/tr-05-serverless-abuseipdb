@@ -23,7 +23,7 @@ def test_positive_indicators_ip_observable(module_headers):
         **{'headers': module_headers}
     )['data']
     indicators = get_observables(response, 'Abuse IPDB')['data']['indicators']
-    assert indicators['count'] == 23
+    assert indicators['count'] == 4
     for indicator in indicators['docs']:
         assert indicator['type'] == 'indicator'
         assert indicator['id']
