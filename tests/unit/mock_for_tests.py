@@ -442,7 +442,7 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
             ]
         },
         'sightings': {
-            'count': 2,
+            'count': 1,
             'docs': [
                 {
                     'confidence': 'Medium',
