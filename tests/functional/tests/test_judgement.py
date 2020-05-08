@@ -23,7 +23,7 @@ def test_positive_judgement_ip_observable(module_headers):
         **{'headers': module_headers}
     )['data']
     judgements = get_observables(response, 'Abuse IPDB')['data']['judgements']
-    assert judgements['count'] == 23
+    assert judgements['count'] == 25
     for judgement in judgements['docs']:
         assert judgement['type'] == 'judgement'
         assert judgement['id']
