@@ -13,7 +13,8 @@ from api.errors import (
     AbuseNotFoundError,
     AbuseInternalServerError,
     AbuseUnexpectedResponseError,
-    AbuseTooManyRequestsError
+    AbuseTooManyRequestsError,
+    AbuseServerDownError
 )
 
 
@@ -73,22 +74,23 @@ def jsonify_errors(error):
 
 def get_response_data(response):
 
+    expected_response_errors = {
+        HTTPStatus.UNAUTHORIZED: AbuseInvalidCredentialsError,
+        HTTPStatus.NOT_FOUND: AbuseNotFoundError,
+        HTTPStatus.INTERNAL_SERVER_ERROR: AbuseInternalServerError,
+        521: AbuseServerDownError
+    }
+
     if response.ok:
         return response.text if 'DOCTYPE html' in response.text \
             else response.json()
 
     else:
-        if response.status_code == HTTPStatus.UNAUTHORIZED:
-            raise AbuseInvalidCredentialsError()
-
-        if response.status_code == HTTPStatus.NOT_FOUND:
-            raise AbuseNotFoundError()
+        if response.status_code in expected_response_errors:
+            raise expected_response_errors[response.status_code]
 
         if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
             return {}
-
-        if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
-            raise AbuseInternalServerError()
 
         if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
             raise AbuseTooManyRequestsError(response)

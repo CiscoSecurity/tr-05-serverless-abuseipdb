@@ -4,6 +4,7 @@ UNKNOWN = 'unknown'
 NOT_FOUND = 'not found'
 INTERNAL = 'internal error'
 TOO_MANY_REQUESTS = 'too many requests'
+SERVER_DOWN = 'web server is down'
 
 
 class TRError(Exception):
@@ -51,6 +52,14 @@ class AbuseUnexpectedResponseError(TRError):
         super().__init__(
             UNKNOWN,
             str(error_payload)
+        )
+
+
+class AbuseServerDownError(TRError):
+    def __init__(self):
+        super().__init__(
+            SERVER_DOWN,
+            'The AbuseIPDB server is down.'
         )
 
 
