@@ -30,6 +30,9 @@ def test_positive_sighting_ip_observable(module_headers):
         'source': {'value': 'cloudflare.com', 'type': 'domain'},
         'related': payload
     }
+
+    assert len(sightings['docs']) > 0
+
     for sighting in sightings['docs']:
         assert sighting['type'] == 'sighting'
         assert sighting['id']
@@ -48,3 +51,5 @@ def test_positive_sighting_ip_observable(module_headers):
         assert sighting['observed_time']['start_time']
         assert sighting['observables'][0] == payload
         assert sighting['relations'][0] == relations
+
+    assert sightings['count'] == len(sightings['docs'])
