@@ -4,7 +4,7 @@ import json
 
 from authlib.jose import jwt
 from authlib.jose.errors import JoseError
-from flask import request, current_app, jsonify
+from flask import request, current_app, jsonify, g
 from bs4 import BeautifulSoup
 
 from api.errors import (
@@ -64,12 +64,39 @@ def get_json(schema):
     return data
 
 
+def format_docs(docs):
+    return {'count': len(docs), 'docs': docs}
+
+
 def jsonify_data(data):
     return jsonify({'data': data})
 
 
 def jsonify_errors(error):
-    return jsonify({'errors': [error]})
+    data = {
+        'errors': [error],
+        'data': {}
+    }
+
+    if g.get('sightings'):
+        data['data'].update({'sightings': format_docs(g.sightings)})
+
+    if g.get('indicators'):
+        data['data'].update({'indicators': format_docs(g.indicators)})
+
+    if g.get('verdicts'):
+        data['data'].update({'verdicts': format_docs(g.verdicts)})
+
+    if g.get('judgements'):
+        data['data'].update({'judgements': format_docs(g.judgements)})
+
+    if g.get('relationships'):
+        data['data'].update({'relationships': format_docs(g.relationships)})
+
+    if not data['data']:
+        data.pop('data')
+
+    return jsonify(data)
 
 
 def get_response_data(response):

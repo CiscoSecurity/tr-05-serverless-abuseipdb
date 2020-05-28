@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, g
 import requests
 
 from api.schemas import ObservableSchema
@@ -11,21 +11,22 @@ from api.utils import (
     jsonify_data,
     url_for,
     get_response_data,
-    get_categories_objects
+    get_categories_objects,
+    format_docs
 )
 
 
 enrich_api = Blueprint('enrich', __name__)
 
 
-def validate_abuse_ipdb_output(abuse_input):
+def validate_abuse_ipdb_output(abuse_input, token):
     url = url_for('check')
 
     headers = {
         'Accept': 'application/json',
         'User-Agent': ('Cisco Threat Response Integrations '
                        '<tr-integrations-support@cisco.com>'),
-        'Key': get_jwt().get('key', '')
+        'Key': token
     }
 
     params = {
@@ -56,19 +57,15 @@ def group_observables(relay_input):
     return result
 
 
-def get_abuse_ipdb_outputs(observables):
+def get_abuse_ipdb_outputs(observable, token):
     # Return list of responses from AbuseIPDB for all observables
 
-    outputs = []
-    for observable in observables:
-        abuse_ipdb_output = validate_abuse_ipdb_output(
-            observable['value'])
+    abuse_ipdb_output = validate_abuse_ipdb_output(observable['value'], token)
 
-        if abuse_ipdb_output:
-            abuse_ipdb_output['data']['observable'] = observable
-            outputs.append(abuse_ipdb_output)
+    if abuse_ipdb_output:
+        abuse_ipdb_output['data']['observable'] = observable
 
-    return outputs
+    return abuse_ipdb_output
 
 
 def get_categories():
@@ -302,10 +299,6 @@ def extract_relationships(output):
     return docs
 
 
-def format_docs(docs):
-    return {'count': len(docs), 'docs': docs}
-
-
 @enrich_api.route('/deliberate/observables', methods=['POST'])
 def deliberate_observables():
     relay_input = get_json(ObservableSchema(many=True))
@@ -315,18 +308,21 @@ def deliberate_observables():
     if not observables:
         return jsonify_data({})
 
-    abuse_outputs = get_abuse_ipdb_outputs(observables)
-
     start_time = datetime.utcnow()
+    token = get_jwt().get('key', '')
 
-    verdicts = []
-    for output in abuse_outputs:
-        verdicts.append(extract_verdicts(output, start_time))
+    g.verdicts = []
+
+    for observable in observables:
+        output = get_abuse_ipdb_outputs(observable, token)
+
+        if output:
+            g.verdicts.append(extract_verdicts(output, start_time))
 
     relay_output = {}
 
-    if verdicts:
-        relay_output['verdicts'] = format_docs(verdicts)
+    if g.verdicts:
+        relay_output['verdicts'] = format_docs(g.verdicts)
 
     return jsonify_data(relay_output)
 
@@ -340,54 +336,55 @@ def observe_observables():
     if not observables:
         return jsonify_data({})
 
-    abuse_outputs = get_abuse_ipdb_outputs(observables)
-
-    if not abuse_outputs:
-        return jsonify_data({})
-
     time_now = datetime.utcnow()
 
     # get dict with actual abuseipdb categories with titles and descriptions
     categories = get_categories()
 
-    verdicts = []
-    judgements = []
-    indicators = []
-    sightings = []
-    relationships = []
+    token = get_jwt().get('key', '')
 
-    for output in abuse_outputs:
+    g.verdicts = []
+    g.judgements = []
+    g.indicators = []
+    g.sightings = []
+    g.relationships = []
 
-        verdicts.append(extract_verdicts(output, time_now))
+    for observable in observables:
+        output = get_abuse_ipdb_outputs(observable, token)
 
-        output['categories_ids'] = []
-        output['relations'] = {}
+        if output:
+            g.verdicts.append(extract_verdicts(output, time_now))
 
-        reports = output['data']['reports']
-        reports.sort(key=lambda x: x['reportedAt'], reverse=True)
+            output['categories_ids'] = []
+            output['relations'] = {}
 
-        if len(reports) >= current_app.config['CTR_ENTITIES_LIMIT']:
-            reports = reports[:current_app.config['CTR_ENTITIES_LIMIT']]
+            reports = output['data']['reports']
+            reports.sort(key=lambda x: x['reportedAt'], reverse=True)
 
-        for report in reports:
-            judgements.append(extract_judgement(report, output, categories))
-            indicators.extend(extract_indicators(report, output, categories))
-            sightings.append(extract_sightings(report, output))
+            if len(reports) >= current_app.config['CTR_ENTITIES_LIMIT']:
+                reports = reports[:current_app.config['CTR_ENTITIES_LIMIT']]
 
-        relationships.extend(extract_relationships(output))
+            for report in reports:
+                g.judgements.append(
+                    extract_judgement(report, output, categories))
+                g.indicators.extend(
+                    extract_indicators(report, output, categories))
+                g.sightings.append(extract_sightings(report, output))
+
+            g.relationships.extend(extract_relationships(output))
 
     relay_output = {}
 
-    if judgements:
-        relay_output['judgements'] = format_docs(judgements)
-    if verdicts:
-        relay_output['verdicts'] = format_docs(verdicts)
-    if sightings:
-        relay_output['sightings'] = format_docs(sightings)
-    if indicators:
-        relay_output['indicators'] = format_docs(indicators)
-    if relationships:
-        relay_output['relationships'] = format_docs(relationships)
+    if g.judgements:
+        relay_output['judgements'] = format_docs(g.judgements)
+    if g.verdicts:
+        relay_output['verdicts'] = format_docs(g.verdicts)
+    if g.sightings:
+        relay_output['sightings'] = format_docs(g.sightings)
+    if g.indicators:
+        relay_output['indicators'] = format_docs(g.indicators)
+    if g.relationships:
+        relay_output['relationships'] = format_docs(g.relationships)
 
     return jsonify_data(relay_output)
 
