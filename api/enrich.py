@@ -60,14 +60,12 @@ def group_observables(relay_input):
 def get_abuse_ipdb_outputs(observable, token):
     # Return list of responses from AbuseIPDB for all observables
 
-    outputs = []
     abuse_ipdb_output = validate_abuse_ipdb_output(observable['value'], token)
 
     if abuse_ipdb_output:
         abuse_ipdb_output['data']['observable'] = observable
-        outputs.append(abuse_ipdb_output)
 
-    return outputs
+    return abuse_ipdb_output
 
 
 def get_categories():
@@ -316,8 +314,9 @@ def deliberate_observables():
     g.verdicts = []
 
     for observable in observables:
-        abuse_outputs = get_abuse_ipdb_outputs(observable, token)
-        for output in abuse_outputs:
+        output = get_abuse_ipdb_outputs(observable, token)
+
+        if output:
             g.verdicts.append(extract_verdicts(output, start_time))
 
     relay_output = {}
@@ -351,10 +350,9 @@ def observe_observables():
     g.relationships = []
 
     for observable in observables:
-        abuse_outputs = get_abuse_ipdb_outputs(observable, token)
+        output = get_abuse_ipdb_outputs(observable, token)
 
-        for output in abuse_outputs:
-
+        if output:
             g.verdicts.append(extract_verdicts(output, time_now))
 
             output['categories_ids'] = []
