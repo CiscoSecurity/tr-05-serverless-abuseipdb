@@ -18,11 +18,17 @@ def test_positive_indicators_ip_observable(module_headers):
     Importance: Critical
     """
     payload = {'type': 'ip', 'value': '1.1.1.1'}
-    response = enrich_observe_observables(
+    response_from_all_modules = enrich_observe_observables(
         payload=[payload],
         **{'headers': module_headers}
     )['data']
-    indicators = get_observables(response, 'Abuse IPDB')['data']['indicators']
+    response_from_abuse_module = get_observables(
+        response_from_all_modules, 'Abuse IPDB')
+    assert response_from_abuse_module['module'] == 'Abuse IPDB'
+    assert response_from_abuse_module['module_instance_id']
+    assert response_from_abuse_module['module_type_id']
+
+    indicators = response_from_abuse_module['data']['indicators']
     assert len(indicators['docs']) > 0
     for indicator in indicators['docs']:
         assert indicator['type'] == 'indicator'
