@@ -20,5 +20,5 @@ before_script:
 
 script:
 - flake8 .
-- pytest -v tests/unit/
-- pytest -v tests/functional
+- coverage run --source api/ -m pytest --verbose tests/unit/ && coverage report
+- pytest --verbose tests/functional/
