@@ -1,0 +1,11 @@
+{
+  "name": "AbuseIPDB IP Checker",
+  "jwt": {
+    "key": "Abuse IPDB API Key"
+  },
+  "region": {
+    "us": "07aedd54-aaed-43d0-b862-e8dc5e61bc91",
+    "eu": "4b4b5ea4-fc3f-43d3-95b7-5745527c1428",
+    "apjc": "e97eecc4-6680-42d2-bb14-3864e73bfab0"
+  }
+}
