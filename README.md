@@ -283,7 +283,7 @@ header set to `Bearer <JWT>`.
     - `Sighting`.
   - Must be a positive integer. Defaults to `100` (if unset or incorrect).
 
-## Implementation Details
+## CTIM Mapping Specifics
 
 Each response from the AbuseIPDB API for the supported observables generates
 the following CTIM entities:
@@ -292,5 +292,5 @@ the following CTIM entities:
 - `Judgement` is based on `.data.reports[].`
 - `Sighting` is based on `.data.reports[].comment`
 - `Indicator` is based on `.data.reports[].categories[]`
-- `Relationship` has relationship type `sighting-of` which connects
-the `Sighting` with its `Indicator` 
+- `Relationship` has a relationship type `sighting-of` which connects
+ `Sighting` with its `Indicator` 
