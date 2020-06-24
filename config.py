@@ -32,7 +32,7 @@ class Config(object):
         'Malicious': (86, 100)
     }
 
-    CTIM_SCHEMA_VERSION = '1.0.16'
+    CTIM_SCHEMA_VERSION = '1.0.17'
     CTIM_VERDICT_DEFAULTS = {
         'type': 'verdict',
     }
