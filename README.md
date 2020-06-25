@@ -1,7 +1,7 @@
 [![Travis CI Build Status](https://travis-ci.com/CiscoSecurity/tr-05-serverless-abuseipdb.svg?branch=develop)](https://travis-ci.com/CiscoSecurity/tr-05-serverless-abuseipdb)
 
 
-# AbuseIPDB IP Checker Relay API
+# AbuseIPDB IP Checker Relay
 
 Concrete Relay implementation using
 [AbuseIPDB IP Checker](https://www.abuseipdb.com/)
