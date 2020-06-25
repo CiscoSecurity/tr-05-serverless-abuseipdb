@@ -269,7 +269,7 @@ header set to `Bearer <JWT>`.
 
 ```json
 {
-  "key": "<AbuseIPDB_API_KEY>"
+  "key": "<ABUSE_IPDB_API_KEY>"
 }
 ```
 
