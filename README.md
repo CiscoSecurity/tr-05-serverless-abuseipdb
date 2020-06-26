@@ -290,7 +290,7 @@ the following CTIM entities:
 
 - `Verdict` is based on `.data.abuseConfidenceScore`
 - `Judgement` is based on each report in `.data.reports[].`
-- `Sighting` is based on each report comment in `.data.reports[].comment`
+- `Sighting` is based on comment to each report in `.data.reports[].comment`
 - `Indicator` is based on each category in each report `.data.reports[].categories[]`.
 All categories description can be found here [Report Catagories](https://www.abuseipdb.com/categories)
 - `Relationship` has a relationship type `sighting-of` which connects
