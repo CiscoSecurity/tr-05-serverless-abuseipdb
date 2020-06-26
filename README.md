@@ -289,8 +289,9 @@ Each response from the AbuseIPDB API for the supported observables generates
 the following CTIM entities:
 
 - `Verdict` is based on `.data.abuseConfidenceScore`
-- `Judgement` is based on `.data.reports[].`
-- `Sighting` is based on `.data.reports[].comment`
-- `Indicator` is based on `.data.reports[].categories[]`
+- `Judgement` is based on each report in `.data.reports[].`
+- `Sighting` is based on each report comment `.data.reports[].comment`
+- `Indicator` is based on each category in each report `.data.reports[].categories[]`.
+All categories description can be found here [Report Catagories](https://www.abuseipdb.com/categories)
 - `Relationship` has a relationship type `sighting-of` which connects
  `Sighting` with its `Indicator` 
