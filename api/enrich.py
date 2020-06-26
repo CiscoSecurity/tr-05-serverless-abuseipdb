@@ -166,7 +166,7 @@ def extract_judgement(report, output, categories):
         'type': output['data']['observable']['type']
     }
 
-    judgement_id = f'transient:{uuid4()}'
+    judgement_id = f'transient:judgement-{uuid4()}'
 
     doc = {
         'id': judgement_id,
@@ -199,7 +199,7 @@ def extract_sightings(report, output):
         'type': output['data']['observable']['type']
     }
 
-    sighting_id = f'transient:{uuid4()}'
+    sighting_id = f'transient:sighting-{uuid4()}'
 
     # fill the obj for make relationships
     for category in report['categories']:
@@ -242,7 +242,7 @@ def extract_indicators(report, output, categories):
         if category_id not in output['categories_ids']:
             output['categories_ids'].append(category_id)
 
-            indicator_id = f'transient:{uuid4()}'
+            indicator_id = f'transient:indicator-{uuid4()}'
 
             # obj for make relationships
             output['relations'][category_id] = {
@@ -285,7 +285,7 @@ def extract_relationships(output):
 
         for sighting_id in relation['sighting_ids']:
 
-            relationship_id = f'transient:{uuid4()}'
+            relationship_id = f'transient:relationship-{uuid4()}'
 
             doc = {
                 'id': relationship_id,

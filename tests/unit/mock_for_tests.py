@@ -106,7 +106,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                         }
                     ],
                     'producer': 'AbuseIPDB',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'short_description': 'description for id 15',
                     'title': 'title for id 15',
                     'type': 'indicator',
@@ -125,7 +125,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                         }
                     ],
                     'producer': 'AbuseIPDB',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'short_description': 'description for id 21',
                     'title': 'title for id 21',
                     'type': 'indicator',
@@ -144,7 +144,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                         }
                     ],
                     'producer': 'AbuseIPDB',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'short_description': 'description for id 18',
                     'title': 'title for id 18',
                     'type': 'indicator',
@@ -163,7 +163,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                         }
                     ],
                     'producer': 'AbuseIPDB',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'short_description': 'description for id 20',
                     'title': 'title for id 20',
                     'type': 'indicator',
@@ -185,7 +185,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                     },
                     "priority": 85,
                     "reason": "title for id 15, title for id 21",
-                    "schema_version": "1.0.16",
+                    "schema_version": "1.0.17",
                     "severity": "Medium",
                     "source": "AbuseIPDB",
                     "source_uri":
@@ -206,7 +206,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                     },
                     "priority": 85,
                     "reason": "title for id 18, title for id 20",
-                    "schema_version": "1.0.16",
+                    "schema_version": "1.0.17",
                     "severity": "Medium",
                     "source": "AbuseIPDB",
                     "source_uri":
@@ -224,22 +224,22 @@ EXPECTED_RESPONSE_OBSERVE = {
             'docs': [
                 {
                     'relationship_type': 'sighting-of',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'type': 'relationship'
                 },
                 {
                     'relationship_type': 'sighting-of',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'type': 'relationship'
                 },
                 {
                     'relationship_type': 'sighting-of',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'type': 'relationship'
                 },
                 {
                     'relationship_type': 'sighting-of',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'type': 'relationship'
                 }
             ]
@@ -284,7 +284,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                             }
                         }
                     ],
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'source': 'AbuseIPDB',
                     'source_uri':
                         'https://www.abuseipdb.com/check/118.25.6.39',
@@ -328,7 +328,7 @@ EXPECTED_RESPONSE_OBSERVE = {
                             }
                         }
                     ],
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'source': 'AbuseIPDB',
                     'source_uri':
                         'https://www.abuseipdb.com/check/118.25.6.39',
@@ -373,7 +373,7 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
                         }
                     ],
                     'producer': 'AbuseIPDB',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'short_description': 'description for id 15',
                     'title': 'title for id 15',
                     'type': 'indicator',
@@ -392,7 +392,7 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
                         }
                     ],
                     'producer': 'AbuseIPDB',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'short_description': 'description for id 21',
                     'title': 'title for id 21',
                     'type': 'indicator',
@@ -413,7 +413,7 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
                     },
                     'priority': 85,
                     "reason": "title for id 15, title for id 21",
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'severity': 'Medium',
                     'source': 'AbuseIPDB',
                     'source_uri':
@@ -431,12 +431,12 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
             'docs': [
                 {
                     'relationship_type': 'sighting-of',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'type': 'relationship'
                 },
                 {
                     'relationship_type': 'sighting-of',
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'type': 'relationship'
                 }
             ]
@@ -481,7 +481,7 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
                             }
                         }
                     ],
-                    'schema_version': '1.0.16',
+                    'schema_version': '1.0.17',
                     'source': 'AbuseIPDB',
                     'source_uri':
                         'https://www.abuseipdb.com/check/118.25.6.39',
