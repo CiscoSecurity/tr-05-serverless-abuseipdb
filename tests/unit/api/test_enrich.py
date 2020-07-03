@@ -14,7 +14,8 @@ from tests.unit.mock_for_tests import (
     ABUSE_CATEGORIES,
     EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1,
     ABUSE_429_RESPONSE,
-    EXPECTED_RESPONSE_429_ERROR
+    EXPECTED_RESPONSE_429_ERROR,
+    ABUSE_503_RESPONSE
 )
 
 
@@ -338,3 +339,20 @@ def test_enrich_call_429_error(route, client, valid_jwt, valid_json,
 
     data = response.get_json()
     assert data == EXPECTED_RESPONSE_429_ERROR
+
+
+def test_health_call_503(route, client, valid_jwt, valid_json,
+                         abuse_api_request):
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False,
+        status_error=HTTPStatus.SERVICE_UNAVAILABLE
+    )
+
+    response = client.post(
+        route, headers=headers(valid_jwt), json=valid_json
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    data = response.get_json()
+    assert data == ABUSE_503_RESPONSE
