@@ -341,8 +341,8 @@ def test_enrich_call_429_error(route, client, valid_jwt, valid_json,
     assert data == EXPECTED_RESPONSE_429_ERROR
 
 
-def test_health_call_503(route, client, valid_jwt, valid_json,
-                         abuse_api_request):
+def test_enrich_call_503_error(route, client, valid_jwt, valid_json,
+                               abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(
         ok=False,
         status_error=HTTPStatus.SERVICE_UNAVAILABLE
