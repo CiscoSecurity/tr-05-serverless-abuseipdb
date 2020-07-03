@@ -72,10 +72,10 @@ ABUSE_429_RESPONSE = {
 ABUSE_503_RESPONSE = {
     "errors": [
         {
-            'code': 'service unavailable',
-            'message': 'The AbuseIPDB is unavailable.'
-                       ' Please, try again later.',
-            'type': 'fatal'
+            "code": "service unavailable",
+            "message": "The AbuseIPDB is unavailable."
+                       " Please, try again later.",
+            "type": "fatal"
         }
     ]
 }
