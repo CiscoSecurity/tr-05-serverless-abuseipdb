@@ -14,7 +14,8 @@ from api.errors import (
     AbuseInternalServerError,
     AbuseUnexpectedResponseError,
     AbuseTooManyRequestsError,
-    AbuseServerDownError
+    AbuseServerDownError,
+    AbuseUnavailableError
 )
 
 
@@ -105,6 +106,9 @@ def get_response_data(response):
         HTTPStatus.UNAUTHORIZED: AbuseInvalidCredentialsError,
         HTTPStatus.NOT_FOUND: AbuseNotFoundError,
         HTTPStatus.INTERNAL_SERVER_ERROR: AbuseInternalServerError,
+        HTTPStatus.BAD_GATEWAY: AbuseUnavailableError,
+        HTTPStatus.SERVICE_UNAVAILABLE: AbuseUnavailableError,
+        HTTPStatus.GATEWAY_TIMEOUT: AbuseUnavailableError,
         521: AbuseServerDownError
     }
 

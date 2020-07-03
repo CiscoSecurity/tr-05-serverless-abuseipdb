@@ -5,6 +5,7 @@ NOT_FOUND = 'not found'
 INTERNAL = 'internal error'
 TOO_MANY_REQUESTS = 'too many requests'
 SERVER_DOWN = 'web server is down'
+SERVER_UNAVAILABLE = 'service unavailable'
 
 
 class TRError(Exception):
@@ -60,6 +61,15 @@ class AbuseServerDownError(TRError):
         super().__init__(
             SERVER_DOWN,
             'The AbuseIPDB server is down.'
+        )
+
+
+class AbuseUnavailableError(TRError):
+    def __init__(self):
+
+        super().__init__(
+            SERVER_UNAVAILABLE,
+            'The AbuseIPDB is unavailable. Please, try again later.'
         )
 
 
