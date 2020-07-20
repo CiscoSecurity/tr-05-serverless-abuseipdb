@@ -277,7 +277,8 @@ EXPECTED_RESPONSE_OBSERVE = {
                         }
                     ],
                     'observed_time': {
-                        'start_time': '2020-03-10T23:11:57.000000Z'
+                        'start_time': '2020-03-10T23:11:57.000000Z',
+                        'end_time': '2020-03-10T23:11:57.000000Z'
                     },
                     'relations': [
                         {
@@ -321,7 +322,8 @@ EXPECTED_RESPONSE_OBSERVE = {
                         }
                     ],
                     'observed_time': {
-                        'start_time': '2020-02-26T14:34:59.000000Z'
+                        'start_time': '2020-02-26T14:34:59.000000Z',
+                        'end_time': '2020-02-26T14:34:59.000000Z'
                     },
                     'relations': [
                         {
@@ -474,7 +476,8 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
                         }
                     ],
                     'observed_time': {
-                        'start_time': '2020-03-10T23:11:57.000000Z'
+                        'start_time': '2020-03-10T23:11:57.000000Z',
+                        'end_time': '2020-03-10T23:11:57.000000Z'
                     },
                     'relations': [
                         {

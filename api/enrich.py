@@ -192,6 +192,8 @@ def extract_sightings(report, output):
     observed_time = {
         'start_time': start_time.isoformat(
             timespec='microseconds') + 'Z',
+        'end_time': start_time.isoformat(
+            timespec='microseconds') + 'Z'
     }
 
     observable = {
