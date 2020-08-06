@@ -41,14 +41,14 @@ def test_positive_indicators_ip_observable(module_headers):
         assert indicator['type'] == 'indicator'
         assert indicator['id'].startswith('transient:indicator-')
         assert indicator['schema_version']
-        assert indicator['producer'] == MODULE_NAME
+        assert indicator['producer'] == SOURCE
         assert indicator['valid_time'] == {}
         assert indicator['confidence'] == 'Medium'
         assert indicator['title']
         assert indicator['description']
         assert indicator['external_ids']
         assert indicator['external_references'] == [{
-            'source_name': MODULE_NAME,
+            'source_name': SOURCE,
             'description': f'{SOURCE} attack categories',
             'url': f'{ABUSE_IPDB_URL}/categories',
             'external_id': indicator["external_ids"][0]
