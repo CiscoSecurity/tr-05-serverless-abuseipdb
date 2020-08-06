@@ -1,5 +1,6 @@
 from ctrlibrary.core.utils import get_observables
 from ctrlibrary.threatresponse.enrich import enrich_deliberate_observables
+from tests.functional.tests.constants import MODULE_NAME
 
 
 def test_positive_clean_verdict_ip_observable(module_headers):
@@ -17,16 +18,26 @@ def test_positive_clean_verdict_ip_observable(module_headers):
 
     Importance: Critical
     """
-    payload = {'type': 'ip', 'value': '180.126.219.126'}
-    response = enrich_deliberate_observables(
-        payload=[payload],
+    observables = [{'type': 'ip', 'value': '180.126.219.126'}]
+    response_from_all_modules = enrich_deliberate_observables(
+        payload=observables,
         **{'headers': module_headers}
     )['data']
-    verdicts = get_observables(response, 'Abuse IPDB')['data']['verdicts']
+
+    response_from_abuse = get_observables(response_from_all_modules,
+                                          MODULE_NAME)
+
+    assert response_from_abuse['module'] == MODULE_NAME
+    assert response_from_abuse['module_instance_id']
+    assert response_from_abuse['module_type_id']
+
+    verdicts = response_from_abuse['data']['verdicts']
+    assert verdicts['count'] == 1
     assert verdicts['docs'][0]['type'] == 'verdict'
     assert verdicts['docs'][0]['disposition'] == 1
     assert verdicts['docs'][0]['disposition_name'] == 'Clean'
-    assert verdicts['docs'][0]['observable'] == payload
+    assert verdicts['docs'][0]['observable'] == observables[0]
+    assert verdicts['docs'][0]['valid_time']['start_time']
 
 
 def test_positive_suspicious_verdict_ip_observable(module_headers):
@@ -44,16 +55,26 @@ def test_positive_suspicious_verdict_ip_observable(module_headers):
 
     Importance: Critical
     """
-    payload = {'type': 'ip', 'value': '159.69.49.100'}
-    response = enrich_deliberate_observables(
-        payload=[payload],
+    observables = [{'type': 'ip', 'value': '159.69.49.100'}]
+    response_from_all_modules = enrich_deliberate_observables(
+        payload=observables,
         **{'headers': module_headers}
     )['data']
-    verdicts = get_observables(response, 'Abuse IPDB')['data']['verdicts']
+
+    response_from_abuse = get_observables(response_from_all_modules,
+                                          MODULE_NAME)
+
+    assert response_from_abuse['module'] == MODULE_NAME
+    assert response_from_abuse['module_instance_id']
+    assert response_from_abuse['module_type_id']
+
+    verdicts = response_from_abuse['data']['verdicts']
+    assert verdicts['count'] == 1
     assert verdicts['docs'][0]['type'] == 'verdict'
     assert verdicts['docs'][0]['disposition'] == 3
     assert verdicts['docs'][0]['disposition_name'] == 'Suspicious'
-    assert verdicts['docs'][0]['observable'] == payload
+    assert verdicts['docs'][0]['observable'] == observables[0]
+    assert verdicts['docs'][0]['valid_time']['start_time']
 
 
 def test_positive_unknown_verdict_ip_observable(module_headers):
@@ -71,13 +92,23 @@ def test_positive_unknown_verdict_ip_observable(module_headers):
 
     Importance: Critical
     """
-    payload = {'type': 'ip', 'value': '1.1.1.1'}
-    response = enrich_deliberate_observables(
-        payload=[payload],
+    observables = [{'type': 'ip', 'value': '1.1.1.1'}]
+    response_from_all_modules = enrich_deliberate_observables(
+        payload=observables,
         **{'headers': module_headers}
     )['data']
-    verdicts = get_observables(response, 'Abuse IPDB')['data']['verdicts']
+
+    response_from_abuse = get_observables(response_from_all_modules,
+                                          MODULE_NAME)
+
+    assert response_from_abuse['module'] == MODULE_NAME
+    assert response_from_abuse['module_instance_id']
+    assert response_from_abuse['module_type_id']
+
+    verdicts = response_from_abuse['data']['verdicts']
+    assert verdicts['count'] == 1
     assert verdicts['docs'][0]['type'] == 'verdict'
     assert verdicts['docs'][0]['disposition'] == 5
     assert verdicts['docs'][0]['disposition_name'] == 'Unknown'
-    assert verdicts['docs'][0]['observable'] == payload
+    assert verdicts['docs'][0]['observable'] == observables[0]
+    assert verdicts['docs'][0]['valid_time']['start_time']
