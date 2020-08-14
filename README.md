@@ -188,14 +188,11 @@ understand how to set the `SECRET_KEY` environment variable then check the
 [AWS Environment Variables](aws/EnvironmentVariables.md) guide on passing
 arbitrary environment variables to Lambdas.
 
-5. The command will also build the links to the Threat Response pages (in all
+4. The command will also build the links to the Threat Response pages (in all
 available regions) with the corresponding module creation forms. Select the
 link corresponding to your Threat Response region. The form there will require
 you to enter both your Lambda's `URL` and your `JWT` (along with a unique name)
 to finally create your Threat Response module.
-
-6. Remove the script from the applications's root directory. It will not be
-needed anymore.
 
 That is it! Your Serverless Relay is ready to use! Congratulations!
 
