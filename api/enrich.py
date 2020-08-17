@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from flask import Blueprint, current_app, g
 import requests
+from flask import Blueprint, current_app, g
 
 from api.schemas import ObservableSchema
 from api.utils import (
@@ -12,13 +12,15 @@ from api.utils import (
     url_for,
     get_response_data,
     get_categories_objects,
-    format_docs
+    format_docs,
+    catch_ssl_errors
 )
 
 
 enrich_api = Blueprint('enrich', __name__)
 
 
+@catch_ssl_errors
 def validate_abuse_ipdb_output(abuse_input, token):
     url = url_for('check')
 
@@ -68,6 +70,7 @@ def get_abuse_ipdb_outputs(observable, token):
     return abuse_ipdb_output
 
 
+@catch_ssl_errors
 def get_categories():
 
     # get categories HTML page with categories table

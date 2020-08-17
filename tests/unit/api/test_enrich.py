@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from pytest import fixture
 from unittest import mock
+from requests.exceptions import SSLError
 
 from .utils import headers
 from tests.unit.mock_for_tests import (
@@ -15,7 +16,8 @@ from tests.unit.mock_for_tests import (
     EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1,
     ABUSE_429_RESPONSE,
     EXPECTED_RESPONSE_429_ERROR,
-    ABUSE_503_RESPONSE
+    ABUSE_503_RESPONSE,
+    EXPECTED_RESPONSE_SSL_ERROR
 )
 
 
@@ -356,3 +358,20 @@ def test_enrich_call_503_error(route, client, valid_jwt, valid_json,
 
     data = response.get_json()
     assert data == ABUSE_503_RESPONSE
+
+
+def test_enrich_call_ssl_error(route, client, valid_jwt, valid_json,
+                               abuse_api_request):
+    mock_exception = mock.MagicMock()
+    mock_exception.reason.args.__getitem__().verify_message \
+        = 'self signed certificate'
+    abuse_api_request.side_effect = SSLError(mock_exception)
+
+    response = client.post(
+        route, headers=headers(valid_jwt), json=valid_json
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    data = response.get_json()
+    assert data == EXPECTED_RESPONSE_SSL_ERROR

@@ -5,6 +5,7 @@ import json
 from authlib.jose import jwt
 from authlib.jose.errors import JoseError
 from flask import request, current_app, jsonify, g
+from requests.exceptions import SSLError
 from bs4 import BeautifulSoup
 
 from api.errors import (
@@ -15,7 +16,8 @@ from api.errors import (
     AbuseUnexpectedResponseError,
     AbuseTooManyRequestsError,
     AbuseServerDownError,
-    AbuseUnavailableError
+    AbuseUnavailableError,
+    AbuseSSLError
 )
 
 
@@ -154,3 +156,14 @@ def get_categories_objects(categories_output):
                 'description': columns[2].get_text().strip()
             }
     return categories
+
+
+def catch_ssl_errors(func):
+    def wraps(*args, **kwargs):
+        try:
+            result = func(*args, **kwargs)
+        except SSLError as error:
+            raise AbuseSSLError(error)
+
+        return result
+    return wraps
