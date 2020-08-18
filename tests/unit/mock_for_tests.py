@@ -562,3 +562,14 @@ EXPECTED_RESPONSE_429_ERROR = {
         }
     ]
 }
+
+EXPECTED_RESPONSE_SSL_ERROR = {
+    'errors': [
+        {
+            'code': 'unknown',
+            'message': 'Unable to verify SSL certificate: self signed '
+                       'certificate',
+            'type': 'fatal'
+        }
+    ]
+}

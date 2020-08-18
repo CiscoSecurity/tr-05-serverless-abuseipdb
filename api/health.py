@@ -5,12 +5,14 @@ from api.utils import (
     jsonify_data,
     url_for,
     get_jwt,
-    get_response_data
+    get_response_data,
+    catch_ssl_errors
 )
 
 health_api = Blueprint('health', __name__)
 
 
+@catch_ssl_errors
 def check_health_abuse_ipdb_api():
     url = url_for('check')
 
