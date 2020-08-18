@@ -161,9 +161,7 @@ def get_categories_objects(categories_output):
 def catch_ssl_errors(func):
     def wraps(*args, **kwargs):
         try:
-            result = func(*args, **kwargs)
+            return func(*args, **kwargs)
         except SSLError as error:
             raise AbuseSSLError(error)
-
-        return result
     return wraps
