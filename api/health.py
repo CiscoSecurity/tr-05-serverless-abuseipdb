@@ -18,7 +18,7 @@ def check_health_abuse_ipdb_api():
 
     headers = {
         'Accept': 'application/json',
-        'Key': get_jwt().get('key', '')
+        'Key': get_jwt()
     }
 
     params = {
