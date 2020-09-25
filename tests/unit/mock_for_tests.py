@@ -69,6 +69,17 @@ ABUSE_429_RESPONSE = {
     ]
 }
 
+ABUSE_401_RESPONSE = {
+    "errors": [
+        {
+            "detail": "Authentication failed. You are either missing your "
+                      "API key or it is incorrect. Note: The APIv2 key "
+                      "differs from the APIv1 key.",
+            "status": 401
+        }
+    ]
+}
+
 ABUSE_503_RESPONSE = {
     "errors": [
         {
@@ -525,8 +536,10 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
 EXPECTED_RESPONSE_AUTH_ERROR = {
     'errors': [
         {
-            'code': 'permission denied',
-            'message': 'The request is missing a valid API key.',
+            'code': 'authorization error',
+            'message': 'Authorization failed: Authentication failed. You are '
+                       'either missing your API key or it is incorrect. Note: '
+                       'The APIv2 key differs from the APIv1 key.',
             'type': 'fatal'
         }
     ]

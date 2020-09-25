@@ -9,7 +9,9 @@ from tests.unit.mock_for_tests import (
     EXPECTED_RESPONSE_404_ERROR,
     EXPECTED_RESPONSE_500_ERROR,
     EXPECTED_RESPONSE_AUTH_ERROR,
-    EXPECTED_RESPONSE_SSL_ERROR
+    EXPECTED_RESPONSE_SSL_ERROR,
+    ABUSE_401_RESPONSE,
+    ABUSE_RESPONSE_MOCK
 )
 
 
@@ -28,36 +30,19 @@ def abuse_api_request():
         yield mock_request
 
 
-def abuse_api_response(*, ok, status_error=None):
+def abuse_api_response(*, ok, status_error=None, payload=None):
     mock_response = mock.MagicMock()
 
     mock_response.ok = ok
 
     if ok:
-        payload = {
-            "data": {
-                "ipAddress": "118.25.6.39",
-                "isPublic": True,
-                "ipVersion": 4,
-                "isWhitelisted": False,
-                "abuseConfidenceScore": 30,
-                "countryCode": "CN",
-                "usageType": "Data Center/Web Hosting/Transit",
-                "isp": "Tencent Cloud Computing (Beijing) Co. Ltd",
-                "domain": "tencent.com",
-                "totalReports": 4,
-                "numDistinctUsers": 4,
-                "lastReportedAt": "2020-03-04T15:57:03+00:00"
-            }
-        }
+        if not payload:
+            payload = ABUSE_RESPONSE_MOCK
 
     else:
-        if status_error == 404:
-            mock_response.status_code = 404
-        elif status_error == 500:
-            mock_response.status_code = 500
-        else:
-            mock_response.status_code = 401
+        mock_response.status_code = status_error
+        mock_response.text = str(payload)
+        mock_response.get_json.return_value = payload
 
     mock_response.json = lambda: payload
 
@@ -71,23 +56,31 @@ def test_health_call_success(route, client, valid_jwt, abuse_api_request):
 
 
 def test_health_call_auth_error(route, client, valid_jwt, abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(ok=False)
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False,
+        status_error=HTTPStatus.UNAUTHORIZED,
+        payload=ABUSE_401_RESPONSE
+    )
     response = client.post(route, headers=headers(valid_jwt))
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_AUTH_ERROR
 
 
 def test_health_call_404(route, client, valid_jwt, abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(ok=False,
-                                                        status_error=404)
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False,
+        status_error=HTTPStatus.NOT_FOUND
+    )
     response = client.post(route, headers=headers(valid_jwt))
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_404_ERROR
 
 
 def test_health_call_500(route, client, valid_jwt, abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(ok=False,
-                                                        status_error=500)
+    abuse_api_request.return_value = abuse_api_response(
+        ok=False,
+        status_error=HTTPStatus.INTERNAL_SERVER_ERROR
+    )
     response = client.post(route, headers=headers(valid_jwt))
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_500_ERROR
