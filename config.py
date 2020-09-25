@@ -6,7 +6,7 @@ from version import VERSION
 class Config(object):
     VERSION = VERSION
 
-    SECRET_KEY = os.environ.get('SECRET_KEY', '')
+    SECRET_KEY = os.environ.get('SECRET_KEY', None)
 
     ABUSE_IPDB_API_CLIENT_VERSION = VERSION
     ABUSE_IPDB_SOURCE_NAME = 'AbuseIPDB'
