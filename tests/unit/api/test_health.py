@@ -106,7 +106,7 @@ def test_health_call_ssl_error(route, client, valid_jwt, abuse_api_request):
     assert data == EXPECTED_RESPONSE_SSL_ERROR
 
 
-def test_enrich_call_auth_header_error(route, client, valid_jwt,
+def test_health_call_auth_header_error(route, client, valid_jwt,
                                        abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(ok=True)
 
@@ -118,7 +118,7 @@ def test_enrich_call_auth_header_error(route, client, valid_jwt,
     assert data == EXPECTED_AUTHORIZATION_HEADER_ERROR
 
 
-def test_enrich_call_auth_type_error(route, client, valid_jwt,
+def test_health_call_auth_type_error(route, client, valid_jwt,
                                      abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(ok=True)
     header = {
@@ -133,7 +133,7 @@ def test_enrich_call_auth_type_error(route, client, valid_jwt,
     assert data == EXPECTED_AUTHORIZATION_TYPE_ERROR
 
 
-def test_enrich_call_jwt_structure_error(route, client, valid_jwt,
+def test_health_call_jwt_structure_error(route, client, valid_jwt,
                                          abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(ok=True)
     header = {
@@ -148,7 +148,7 @@ def test_enrich_call_jwt_structure_error(route, client, valid_jwt,
     assert data == EXPECTED_JWT_STRUCTURE_ERROR
 
 
-def test_enrich_call_payload_structure_error(route, client,
+def test_health_call_payload_structure_error(route, client,
                                              valid_jwt_with_wrong_payload,
                                              abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(ok=True)
@@ -164,7 +164,7 @@ def test_enrich_call_payload_structure_error(route, client,
     assert data == EXPECTED_JWT_PAYLOAD_STRUCTURE_ERROR
 
 
-def test_enrich_call_wrong_secret_key_error(route, client, valid_jwt,
+def test_health_call_wrong_secret_key_error(route, client, valid_jwt,
                                             abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(ok=True)
     right_secret_key = client.application.secret_key
@@ -180,7 +180,7 @@ def test_enrich_call_wrong_secret_key_error(route, client, valid_jwt,
     assert data == EXPECTED_WRONG_SECRET_KEY_ERROR
 
 
-def test_enrich_call_missed_secret_key_error(route, client, valid_jwt,
+def test_health_call_missed_secret_key_error(route, client, valid_jwt,
                                              abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(ok=True)
     right_secret_key = client.application.secret_key
