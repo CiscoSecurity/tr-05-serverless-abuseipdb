@@ -314,7 +314,7 @@ def deliberate_observables():
         return jsonify_data({})
 
     start_time = datetime.utcnow()
-    token = get_jwt().get('key', '')
+    token = get_jwt()
 
     g.verdicts = []
 
@@ -346,7 +346,7 @@ def observe_observables():
     # get dict with actual abuseipdb categories with titles and descriptions
     categories = get_categories()
 
-    token = get_jwt().get('key', '')
+    token = get_jwt()
 
     g.verdicts = []
     g.judgements = []

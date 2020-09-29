@@ -6,6 +6,7 @@ INTERNAL = 'internal error'
 TOO_MANY_REQUESTS = 'too many requests'
 SERVER_DOWN = 'web server is down'
 SERVER_UNAVAILABLE = 'service unavailable'
+AUTH_ERROR = 'authorization error'
 
 
 class TRError(Exception):
@@ -35,14 +36,6 @@ class AbuseNotFoundError(TRError):
         super().__init__(
             NOT_FOUND,
             'The Abuse IPDB not found.'
-        )
-
-
-class AbuseInvalidCredentialsError(TRError):
-    def __init__(self):
-        super().__init__(
-            PERMISSION_DENIED,
-            'The request is missing a valid API key.'
         )
 
 
@@ -92,6 +85,15 @@ class AbuseSSLError(TRError):
         super().__init__(
             UNKNOWN,
             f'Unable to verify SSL certificate: {message}'
+        )
+
+
+class AuthorizationError(TRError):
+    def __init__(self, message):
+
+        super().__init__(
+            AUTH_ERROR,
+            f"Authorization failed: {message}"
         )
 
 

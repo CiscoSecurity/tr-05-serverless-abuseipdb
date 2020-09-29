@@ -17,7 +17,8 @@ from tests.unit.mock_for_tests import (
     ABUSE_429_RESPONSE,
     EXPECTED_RESPONSE_429_ERROR,
     ABUSE_503_RESPONSE,
-    EXPECTED_RESPONSE_SSL_ERROR
+    EXPECTED_RESPONSE_SSL_ERROR,
+    ABUSE_401_RESPONSE
 )
 
 
@@ -49,6 +50,7 @@ def abuse_api_response(*, ok, status_error=None, payload=None):
     else:
         mock_response.status_code = status_error
         mock_response.text = str(payload)
+        mock_response.get_json.return_value = payload
 
     mock_response.json = lambda: payload
 
@@ -267,7 +269,10 @@ def test_enrich_call_success_limit_1(categories_mock, route, client, valid_jwt,
 def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
                                 abuse_api_request):
     abuse_api_request.return_value = abuse_api_response(
-        ok=False, status_error=HTTPStatus.UNAUTHORIZED)
+        ok=False,
+        status_error=HTTPStatus.UNAUTHORIZED,
+        payload=ABUSE_401_RESPONSE
+    )
 
     response = client.post(
         route, headers=headers(valid_jwt), json=valid_json
