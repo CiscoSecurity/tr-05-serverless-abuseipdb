@@ -31,3 +31,14 @@ def valid_jwt(client):
     secret_key = client.application.secret_key
 
     return jwt.encode(header, payload, secret_key).decode('ascii')
+
+
+@fixture(scope='session')
+def valid_jwt_with_wrong_payload(client):
+    header = {'alg': 'HS256'}
+
+    payload = {'name': 'test'}
+
+    secret_key = client.application.secret_key
+
+    return jwt.encode(header, payload, secret_key).decode('ascii')
