@@ -151,7 +151,7 @@ def get_response_data(response):
 
         if response.status_code == HTTPStatus.UNAUTHORIZED:
             raise AuthorizationError(
-                message=response.get_json()['errors'][0]['detail']
+                message=response.json()['errors'][0]['detail']
             )
 
         else:
