@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from uuid import uuid4
+from uuid import uuid4, uuid5
 
 import requests
 from flask import Blueprint, current_app, g
@@ -126,6 +126,12 @@ def get_reason(categories, ids):
     return ', '.join(categories_titles)
 
 
+def get_transient_id(entity_type, base_value=None):
+    uuid = (uuid5(current_app.config['NAMESPACE_BASE'], base_value)
+            if base_value else uuid4())
+    return f'transient:{entity_type}-{uuid}'
+
+
 def extract_verdicts(output, start_time):
     disposition, disposition_name = get_disposition(output['data'])
 
@@ -247,7 +253,7 @@ def extract_indicators(report, output, categories):
         if category_id not in output['categories_ids']:
             output['categories_ids'].append(category_id)
 
-            indicator_id = f'transient:indicator-{uuid4()}'
+            indicator_id = get_transient_id('indicator', category_id)
 
             # obj for make relationships
             output['relations'][category_id] = {

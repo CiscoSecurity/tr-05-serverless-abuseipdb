@@ -1,4 +1,5 @@
 import os
+from uuid import uuid4
 
 from version import VERSION
 
@@ -7,6 +8,7 @@ class Config(object):
     VERSION = VERSION
 
     SECRET_KEY = os.environ.get('SECRET_KEY', None)
+    NAMESPACE_BASE = uuid4()
 
     ABUSE_IPDB_API_CLIENT_VERSION = VERSION
     ABUSE_IPDB_SOURCE_NAME = 'AbuseIPDB'
