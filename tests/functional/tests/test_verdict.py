@@ -18,7 +18,7 @@ def test_positive_clean_verdict_ip_observable(module_headers):
 
     Importance: Critical
     """
-    observables = [{'type': 'ip', 'value': '151.80.194.85'}]
+    observables = [{'type': 'ip', 'value': '118.232.96.6'}]
     response_from_all_modules = enrich_deliberate_observables(
         payload=observables,
         **{'headers': module_headers}
@@ -55,7 +55,7 @@ def test_positive_suspicious_verdict_ip_observable(module_headers):
 
     Importance: Critical
     """
-    observables = [{'type': 'ip', 'value': '118.232.96.6'}]
+    observables = [{'type': 'ip', 'value': '45.79.75.81'}]
     response_from_all_modules = enrich_deliberate_observables(
         payload=observables,
         **{'headers': module_headers}
