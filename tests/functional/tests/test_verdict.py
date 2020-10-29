@@ -24,7 +24,7 @@ def test_positive_clean_verdict_ip_observable(module_headers):
     response_from_all_modules = enrich_deliberate_observables(
         payload=observables,
         **{'headers': module_headers}
-    )['data']
+    )
 
     response_from_abuse = get_observables(response_from_all_modules,
                                           MODULE_NAME)
@@ -61,7 +61,7 @@ def test_positive_suspicious_verdict_ip_observable(module_headers):
     response_from_all_modules = enrich_deliberate_observables(
         payload=observables,
         **{'headers': module_headers}
-    )['data']
+    )
 
     response_from_abuse = get_observables(response_from_all_modules,
                                           MODULE_NAME)
@@ -99,7 +99,7 @@ def test_positive_unknown_verdict_ip_observable(module_headers):
     response_from_all_modules = enrich_deliberate_observables(
         payload=observables,
         **{'headers': module_headers}
-    )['data']
+    )
 
     response_from_abuse = get_observables(response_from_all_modules,
                                           MODULE_NAME)

@@ -27,7 +27,7 @@ def test_positive_indicators_ip_observable(module_headers):
     response_from_all_modules = enrich_observe_observables(
         payload=observables,
         **{'headers': module_headers}
-    )['data']
+    )
     response_from_abuse_module = get_observables(
         response_from_all_modules, MODULE_NAME)
 
