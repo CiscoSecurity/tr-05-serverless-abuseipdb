@@ -97,8 +97,8 @@ EXPECTED_RESPONSE_DELIBERATE = {
             'count': 1,
             'docs': [
                 {
-                    'disposition': 1,
-                    'disposition_name': 'Clean',
+                    'disposition': 3,
+                    'disposition_name': 'Suspicious',
                     'observable': {
                         'type': 'ip',
                         'value': '118.25.6.39'
@@ -365,8 +365,8 @@ EXPECTED_RESPONSE_OBSERVE = {
             "count": 1,
             "docs": [
                 {
-                    "disposition": 1,
-                    "disposition_name": "Clean",
+                    "disposition": 3,
+                    "disposition_name": "Suspicious",
                     "observable": {
                         "type": "ip",
                         "value": "118.25.6.39"
@@ -519,8 +519,8 @@ EXPECTED_RESPONSE_OBSERVE_WITH_LIMIT_1 = {
             'count': 1,
             'docs': [
                 {
-                    'disposition': 1,
-                    'disposition_name': 'Clean',
+                    'disposition': 3,
+                    'disposition_name': 'Suspicious',
                     'observable': {
                         'type': 'ip',
                         'value': '118.25.6.39'

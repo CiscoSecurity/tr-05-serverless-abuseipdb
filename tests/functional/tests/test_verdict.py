@@ -1,8 +1,10 @@
+from pytest import mark
 from ctrlibrary.core.utils import get_observables
 from ctrlibrary.threatresponse.enrich import enrich_deliberate_observables
 from tests.functional.tests.constants import MODULE_NAME
 
 
+@mark.skip(reason='Deprecated')
 def test_positive_clean_verdict_ip_observable(module_headers):
     """Perform testing for enrich deliberate observables endpoint to get
     verdict for observable with clean disposition from Abuse IPDB module
@@ -77,6 +79,7 @@ def test_positive_suspicious_verdict_ip_observable(module_headers):
     assert verdicts['docs'][0]['valid_time']['start_time']
 
 
+@mark.skip(reason='Deprecated')
 def test_positive_unknown_verdict_ip_observable(module_headers):
     """Perform testing for enrich deliberate observables endpoint to get
     verdict for observable with unknown disposition from Abuse IPDB module
