@@ -28,9 +28,7 @@ class Config(object):
     ABUSE_IPDB_SEARCH_PERIOD = 30
 
     ABUSE_SCORE_RELATIONS = {
-        'Unknown': (0, 0),
-        'Clean': (1, 25),
-        'Suspicious': (26, 85),
+        'Suspicious': (0, 85),
         'Malicious': (86, 100)
     }
 
@@ -80,8 +78,6 @@ class Config(object):
     CTIM_VALID_DAYS_PERIOD = 7
 
     CTIM_DISPOSITIONS = {
-        'Clean': 1,
         'Suspicious': 3,
-        'Malicious': 2,
-        'Unknown': 5
+        'Malicious': 2
     }
