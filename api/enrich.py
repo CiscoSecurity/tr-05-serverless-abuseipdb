@@ -276,8 +276,8 @@ def extract_indicators(report, output, categories):
                 doc = {
                     'id': indicator_id,
                     'title': category['title'],
-                    'description': category['description'] or
-                                   category['title'],
+                    'description':
+                        category['description'] or category['title'],
                     'short_description':
                         category['description'] or category['title'],
                     'external_ids': [category_id],
