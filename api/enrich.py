@@ -120,7 +120,7 @@ def get_relation(output, observable):
 def get_reason(categories, ids):
     categories_titles = [
         categories[str(id)]['title'] or categories[str(id)]['description']
-        for id in ids
+        for id in ids if id
     ]
 
     return ', '.join(categories_titles)
@@ -214,11 +214,12 @@ def extract_sightings(report, output):
 
     # fill the obj for make relationships
     for category in report['categories']:
-        category_id = str(category)
-        if category_id in output['relations'].keys():
-            output['relations'][category_id]['sighting_ids'].append(
-                sighting_id
-            )
+        if category:
+            category_id = str(category)
+            if category_id in output['relations'].keys():
+                output['relations'][category_id]['sighting_ids'].append(
+                    sighting_id
+                )
 
     external_reference = {
         'source_name': 'AbuseIPDB',
@@ -247,42 +248,44 @@ def extract_sightings(report, output):
 def extract_indicators(report, output, categories):
     docs = []
     for category in report['categories']:
-        category_id = str(category)
+        if category:
+            category_id = str(category)
 
-        # one indicator for each uniq category id
-        if category_id not in output['categories_ids']:
-            output['categories_ids'].append(category_id)
+            # one indicator for each uniq category id
+            if category_id not in output['categories_ids']:
+                output['categories_ids'].append(category_id)
 
-            indicator_id = get_transient_id('indicator', category_id)
+                indicator_id = get_transient_id('indicator', category_id)
 
-            # obj for make relationships
-            output['relations'][category_id] = {
-                'indicator_id': indicator_id,
-                'sighting_ids': []
-            }
+                # obj for make relationships
+                output['relations'][category_id] = {
+                    'indicator_id': indicator_id,
+                    'sighting_ids': []
+                }
 
-            category = categories[category_id]
+                category = categories[category_id]
 
-            external_reference = {
-                'source_name': 'AbuseIPDB',
-                'url': current_app.config['ABUSE_IPDB_CATEGORIES_URL'],
-                'description':
-                    current_app.config['ABUSE_IPDB_CATEGORY_DESCRIPTION'],
-                'external_id': category_id
-            }
+                external_reference = {
+                    'source_name': 'AbuseIPDB',
+                    'url': current_app.config['ABUSE_IPDB_CATEGORIES_URL'],
+                    'description':
+                        current_app.config['ABUSE_IPDB_CATEGORY_DESCRIPTION'],
+                    'external_id': category_id
+                }
 
-            doc = {
-                'id': indicator_id,
-                'title': category['title'],
-                'description': category['description'] or category['title'],
-                'short_description':
-                    category['description'] or category['title'],
-                'external_ids': [category_id],
-                'external_references': [external_reference],
-                **current_app.config['CTIM_INDICATOR_DEFAULT']
-            }
+                doc = {
+                    'id': indicator_id,
+                    'title': category['title'],
+                    'description':
+                        category['description'] or category['title'],
+                    'short_description':
+                        category['description'] or category['title'],
+                    'external_ids': [category_id],
+                    'external_references': [external_reference],
+                    **current_app.config['CTIM_INDICATOR_DEFAULT']
+                }
 
-            docs.append(doc)
+                docs.append(doc)
 
     return docs
 
