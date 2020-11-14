@@ -256,6 +256,9 @@ header set to `Bearer <JWT>`.
     - `Indicator`,
     - `Relationship`.
 
+- `POST /version`
+  - Returns the current version of the application.
+
 ### Supported Types of Observables
 
 - `ip`
