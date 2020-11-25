@@ -20,3 +20,8 @@ script:
 - flake8 .
 - coverage run --source api/ -m pytest --verbose tests/unit/ && coverage report
 - pytest --verbose tests/functional/
+
+notifications:
+  webhooks:
+    urls:
+      - https://nvmqsev2yc.execute-api.us-east-1.amazonaws.com/dev
