@@ -23,5 +23,5 @@ script:
 notifications:
   webhooks:
     urls:
-      - https://wm8k3cw5lg.execute-api.us-east-1.amazonaws.com/dev/
+      - https://euqsx55b02.execute-api.us-east-1.amazonaws.com/dev
     on_start:   always
