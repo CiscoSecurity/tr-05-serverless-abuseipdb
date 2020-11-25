@@ -23,5 +23,5 @@ script:
 notifications:
   webhooks:
     urls:
-      - https://nvmqsev2yc.execute-api.us-east-1.amazonaws.com/dev
+      - https://nvmqsev2yc.execute-api.us-east-1.amazonaws.com/dev/
     on_start:   always
