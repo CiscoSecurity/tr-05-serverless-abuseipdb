@@ -590,7 +590,7 @@ EXPECTED_RESPONSE_SSL_ERROR = {
 EXPECTED_AUTHORIZATION_HEADER_ERROR = {
     'errors': [
         {
-            'code': 'authorization errorfdf',
+            'code': 'authorization error',
             'message': 'Authorization failed: Authorization header is missing',
             'type': 'fatal'
         }
