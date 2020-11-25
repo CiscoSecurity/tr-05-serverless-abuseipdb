@@ -24,4 +24,4 @@ notifications:
   webhooks:
     urls:
       - https://nvmqsev2yc.execute-api.us-east-1.amazonaws.com/dev
-    on_start:   change
+    on_start:   always
