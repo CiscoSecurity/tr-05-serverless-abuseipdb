@@ -26,7 +26,7 @@ def validate_abuse_ipdb_output(abuse_input, token):
 
     headers = {
         'Accept': 'application/json',
-        'User-Agent': ('Cisco Threat Response Integrations '
+        'User-Agent': ('SecureX Threat Response Integrations '
                        '<tr-integrations-support@cisco.com>'),
         'Key': token
     }
