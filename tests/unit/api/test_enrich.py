@@ -75,15 +75,7 @@ def test_enrich_call_with_invalid_json_failure(route, client, valid_jwt,
                            json=invalid_json
                            )
 
-    expected_payload = {
-        'errors': [
-            {
-                'code': 'invalid argument',
-                'message': mock.ANY,
-                'type': 'fatal',
-            }
-        ]
-    }
+    expected_payload = {'data': {}}
 
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == expected_payload
