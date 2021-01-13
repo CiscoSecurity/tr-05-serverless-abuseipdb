@@ -352,10 +352,10 @@ def observe_observables():
 
     time_now = datetime.utcnow()
 
+    token = get_jwt()
+
     # get dict with actual abuseipdb categories with titles and descriptions
     categories = get_categories()
-
-    token = get_jwt()
 
     g.verdicts = []
     g.judgements = []

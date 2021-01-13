@@ -1,11 +1,12 @@
+import json
 from typing import Optional
 from http import HTTPStatus
-import json
 
-from authlib.jose import jwt
-from authlib.jose.errors import BadSignatureError, DecodeError
+import jwt
+import requests
+from jwt import InvalidSignatureError, DecodeError, InvalidAudienceError
 from flask import request, current_app, jsonify, g
-from requests.exceptions import SSLError
+from requests.exceptions import SSLError, ConnectionError, InvalidURL
 from bs4 import BeautifulSoup
 
 from api.errors import (
@@ -22,32 +23,18 @@ from api.errors import (
 
 
 def url_for(endpoint) -> Optional[str]:
-
     return current_app.config['ABUSE_IPDB_API_URL'].format(
         endpoint=endpoint,
     )
 
 
-def get_jwt():
-    """
-    Get Authorization token and validate its signature
-    against the application's secret key, .
-    """
-
-    expected_errors = {
-        KeyError: 'Wrong JWT payload structure',
-        TypeError: '<SECRET_KEY> is missing',
-        BadSignatureError: 'Failed to decode JWT with provided key',
-        DecodeError: 'Wrong JWT structure'
-    }
-
-    token = get_auth_token()
+def set_ctr_entities_limit(payload):
     try:
-        payload = jwt.decode(token, current_app.config['SECRET_KEY'])
-        return payload['key']
-    except tuple(expected_errors) as error:
-        message = expected_errors[error.__class__]
-        raise AuthorizationError(message)
+        ctr_entities_limit = int(payload['CTR_ENTITIES_LIMIT'])
+        assert ctr_entities_limit > 0
+    except (KeyError, ValueError, AssertionError):
+        ctr_entities_limit = current_app.config['CTR_DEFAULT_ENTITIES_LIMIT']
+    current_app.config['CTR_ENTITIES_LIMIT'] = ctr_entities_limit
 
 
 def get_auth_token():
@@ -66,6 +53,67 @@ def get_auth_token():
         return token
     except tuple(expected_errors) as error:
         raise AuthorizationError(expected_errors[error.__class__])
+
+
+def get_public_key(jwks_host, token):
+    expected_errors = {
+        ConnectionError: 'Wrong jwks_host in JWT payload. '
+                         'Make sure domain follows the '
+                         'visibility.<region>.cisco.com structure',
+        InvalidURL: 'Wrong jwks_host in JWT payload. '
+                    'Make sure domain follows the '
+                    'visibility.<region>.cisco.com structure',
+    }
+    try:
+        response = requests.get(f"https://{jwks_host}/.well-known/jwks")
+        jwks = response.json()
+
+        public_keys = {}
+        for jwk in jwks['keys']:
+            kid = jwk['kid']
+            public_keys[kid] = jwt.algorithms.RSAAlgorithm.from_jwk(
+                json.dumps(jwk)
+            )
+        kid = jwt.get_unverified_header(token)['kid']
+        return public_keys.get(kid)
+
+    except tuple(expected_errors) as error:
+        message = expected_errors[error.__class__]
+        raise AuthorizationError(message)
+
+
+def get_jwt():
+    """
+    Get authorization token and validate its signature against the public key
+    from /.well-known/jwks endpoint
+    """
+    expected_errors = {
+        KeyError: 'Wrong JWT payload structure',
+        AssertionError: 'jwk_host is missing in JWT payload. Make sure '
+                        'custom_jwks_host field is present in module_type',
+        InvalidSignatureError: 'Failed to decode JWT with provided key. '
+                               'Make suer domain in custom_jwks_host '
+                               'corresponds to your SekureX instance region.',
+        DecodeError: 'Wrong JWT structure',
+        InvalidAudienceError: 'Wrong configuration-token-audience',
+        TypeError: 'kid from JWT header not found in API response'
+    }
+
+    token = get_auth_token()
+    try:
+        jwks_host = jwt.decode(
+            token, options={'verify_signature': False}).get('jwks_host')
+        assert jwks_host
+        key = get_public_key(jwks_host, token)
+        aud = request.url_root
+        payload = jwt.decode(
+            token, key=key, algorithms=['RS256'], audience=[aud.rstrip('/')]
+        )
+        set_ctr_entities_limit(payload)
+        return payload['key']
+    except tuple(expected_errors) as error:
+        message = expected_errors[error.__class__]
+        raise AuthorizationError(message)
 
 
 def get_json(schema):
