@@ -1,11 +1,13 @@
 from http import HTTPStatus
 
+from jwt import InvalidSignatureError
 from pytest import fixture
 from unittest import mock
-from requests.exceptions import SSLError
+from requests.exceptions import SSLError, ConnectionError, InvalidURL
 
 from .utils import headers
 from tests.unit.mock_for_tests import (
+    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
     EXPECTED_RESPONSE_404_ERROR,
     EXPECTED_RESPONSE_500_ERROR,
     EXPECTED_RESPONSE_AUTH_ERROR,
@@ -16,8 +18,11 @@ from tests.unit.mock_for_tests import (
     EXPECTED_AUTHORIZATION_TYPE_ERROR,
     EXPECTED_JWT_STRUCTURE_ERROR,
     EXPECTED_JWT_PAYLOAD_STRUCTURE_ERROR,
-    EXPECTED_WRONG_SECRET_KEY_ERROR,
-    EXPECTED_MISSED_SECRET_KEY_ERROR
+    EXPECTED_WRONG_JWKS_HOST_ERROR,
+    EXPECTED_JWKS_HOST_MISSING_ERROR,
+    EXPECTED_INVALID_SIGNATURE_ERROR,
+    EXPECTED_WRONG_AUDIENCE_ERROR,
+    EXPECTED_KID_NOT_IN_API_ERROR
 )
 
 
@@ -56,49 +61,85 @@ def abuse_api_response(*, ok, status_error=None, payload=None):
 
 
 def test_health_call_success(route, client, valid_jwt, abuse_api_request):
+
     abuse_api_request.return_value = abuse_api_response(ok=True)
-    response = client.post(route, headers=headers(valid_jwt))
+
+    response = client.post(route, headers=headers(valid_jwt()))
+
     assert response.status_code == HTTPStatus.OK
 
 
 def test_health_call_auth_error(route, client, valid_jwt, abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False,
-        status_error=HTTPStatus.UNAUTHORIZED,
-        payload=ABUSE_401_RESPONSE
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+        ),
+        abuse_api_response(
+            ok=False,
+            status_error=HTTPStatus.UNAUTHORIZED,
+            payload=ABUSE_401_RESPONSE
+        )
     )
-    response = client.post(route, headers=headers(valid_jwt))
+
+    response = client.post(route, headers=headers(valid_jwt()))
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_AUTH_ERROR
 
 
 def test_health_call_404(route, client, valid_jwt, abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False,
-        status_error=HTTPStatus.NOT_FOUND
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+        ),
+        abuse_api_response(
+            ok=False,
+            status_error=HTTPStatus.NOT_FOUND
+        )
     )
-    response = client.post(route, headers=headers(valid_jwt))
+
+    response = client.post(route, headers=headers(valid_jwt()))
+
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_404_ERROR
 
 
 def test_health_call_500(route, client, valid_jwt, abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False,
-        status_error=HTTPStatus.INTERNAL_SERVER_ERROR
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+        ),
+        abuse_api_response(
+            ok=False,
+            status_error=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
     )
-    response = client.post(route, headers=headers(valid_jwt))
+
+    response = client.post(route, headers=headers(valid_jwt()))
+
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_RESPONSE_500_ERROR
 
 
 def test_health_call_ssl_error(route, client, valid_jwt, abuse_api_request):
+
     mock_exception = mock.MagicMock()
     mock_exception.reason.args.__getitem__().verify_message \
         = 'self signed certificate'
-    abuse_api_request.side_effect = SSLError(mock_exception)
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+        ),
+        SSLError(mock_exception)
+    )
 
-    response = client.post(route, headers=headers(valid_jwt))
+    response = client.post(route, headers=headers(valid_jwt()))
 
     assert response.status_code == HTTPStatus.OK
 
@@ -164,33 +205,69 @@ def test_health_call_payload_structure_error(route, client,
     assert data == EXPECTED_JWT_PAYLOAD_STRUCTURE_ERROR
 
 
-def test_health_call_wrong_secret_key_error(route, client, valid_jwt,
-                                            abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(ok=True)
-    right_secret_key = client.application.secret_key
-    client.application.secret_key = 'wrong_key'
+def test_health_call_wrong_jwks_host_error(route, client, valid_jwt,
+                                           abuse_api_request):
+    for error in (ConnectionError, InvalidURL):
+        abuse_api_request.side_effect = error()
 
-    response = client.post(route, headers=headers(valid_jwt))
+        response = client.post(route, headers=headers(valid_jwt()))
 
-    client.application.secret_key = right_secret_key
-
-    assert response.status_code == HTTPStatus.OK
-
-    data = response.get_json()
-    assert data == EXPECTED_WRONG_SECRET_KEY_ERROR
+        assert response.status_code == HTTPStatus.OK
+        assert response.get_json() == EXPECTED_WRONG_JWKS_HOST_ERROR
 
 
-def test_health_call_missed_secret_key_error(route, client, valid_jwt,
-                                             abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(ok=True)
-    right_secret_key = client.application.secret_key
-    client.application.secret_key = None
+def test_health_call_jwks_host_missing_error(route, client, valid_jwt):
 
-    response = client.post(route, headers=headers(valid_jwt))
-
-    client.application.secret_key = right_secret_key
+    response = client.post(route, headers=headers(valid_jwt(jwks_host=None)))
 
     assert response.status_code == HTTPStatus.OK
+    assert response.get_json() == EXPECTED_JWKS_HOST_MISSING_ERROR
 
-    data = response.get_json()
-    assert data == EXPECTED_MISSED_SECRET_KEY_ERROR
+
+@mock.patch('api.utils.jwt.decode')
+def test_health_call_invalid_signature_error(
+        decode_mock, route, client, valid_jwt
+):
+    decode_mock.side_effect = InvalidSignatureError()
+    abuse_api_request.return_value = abuse_api_response(
+        ok=True,
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
+    response = client.post(route, headers=headers(valid_jwt()))
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.get_json() == EXPECTED_INVALID_SIGNATURE_ERROR
+
+
+def test_health_call_wrong_audience_error(
+        route, client, valid_jwt, abuse_api_request
+):
+    abuse_api_request.return_value = abuse_api_response(
+        ok=True,
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
+    response = client.post(
+        route,
+        headers=headers(valid_jwt(aud='http://wrongaudience'))
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.get_json() == EXPECTED_WRONG_AUDIENCE_ERROR
+
+
+def test_health_call_kid_not_in_api_error(
+        route, client, valid_jwt, abuse_api_request
+):
+    abuse_api_request.return_value = abuse_api_response(
+        ok=True,
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
+    response = client.post(
+        route, headers=headers(valid_jwt(kid='left_kid'))
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.get_json() == EXPECTED_KID_NOT_IN_API_ERROR

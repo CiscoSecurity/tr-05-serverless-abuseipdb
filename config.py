@@ -1,4 +1,3 @@
-import os
 from uuid import NAMESPACE_X500
 
 from __version__ import VERSION
@@ -7,7 +6,6 @@ from __version__ import VERSION
 class Config(object):
     VERSION = VERSION
 
-    SECRET_KEY = os.environ.get('SECRET_KEY', None)
     NAMESPACE_BASE = NAMESPACE_X500
 
     ABUSE_IPDB_API_CLIENT_VERSION = VERSION
@@ -67,13 +65,6 @@ class Config(object):
 
     CTR_DEFAULT_ENTITIES_LIMIT = 100
     CTR_ENTITIES_LIMIT = CTR_DEFAULT_ENTITIES_LIMIT
-
-    try:
-        limit = int(os.environ.get('CTR_ENTITIES_LIMIT'))
-        if limit > 0:
-            CTR_ENTITIES_LIMIT = limit
-    except (ValueError, TypeError):
-        pass
 
     CTIM_VALID_DAYS_PERIOD = 7
 

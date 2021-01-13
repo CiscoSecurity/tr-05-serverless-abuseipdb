@@ -1,8 +1,9 @@
 from http import HTTPStatus
 
+from jwt import InvalidSignatureError
 from pytest import fixture
 from unittest import mock
-from requests.exceptions import SSLError
+from requests.exceptions import SSLError, ConnectionError, InvalidURL
 
 from .utils import headers
 from tests.unit.mock_for_tests import (
@@ -23,8 +24,12 @@ from tests.unit.mock_for_tests import (
     EXPECTED_AUTHORIZATION_TYPE_ERROR,
     EXPECTED_JWT_STRUCTURE_ERROR,
     EXPECTED_JWT_PAYLOAD_STRUCTURE_ERROR,
-    EXPECTED_WRONG_SECRET_KEY_ERROR,
-    EXPECTED_MISSED_SECRET_KEY_ERROR
+    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
+    EXPECTED_WRONG_JWKS_HOST_ERROR,
+    EXPECTED_JWKS_HOST_MISSING_ERROR,
+    EXPECTED_INVALID_SIGNATURE_ERROR,
+    EXPECTED_WRONG_AUDIENCE_ERROR,
+    EXPECTED_KID_NOT_IN_API_ERROR
 )
 
 
@@ -110,11 +115,17 @@ def expected_payload(route, client):
 @mock.patch('api.enrich.get_categories_objects')
 def test_enrich_call_success(categories_mock, route, client, valid_jwt,
                              valid_json, abuse_api_request, expected_payload):
+
     categories_mock.return_value = ABUSE_CATEGORIES
-    abuse_api_request.return_value = abuse_api_response(ok=True)
+    abuse_api_request.side_effect = (
+        abuse_api_response(ok=True,
+                           payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        abuse_api_response(ok=True),
+        abuse_api_response(ok=True)
+    )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -163,15 +174,18 @@ def test_enrich_call_success(categories_mock, route, client, valid_jwt,
 def test_enrich_call_error_with_data(categories_mock, route, client, valid_jwt,
                                      valid_json_multiple, abuse_api_request,
                                      expected_payload):
+
     categories_mock.return_value = ABUSE_CATEGORIES
     abuse_api_request.side_effect = (
+        abuse_api_response(ok=True,
+                           payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
         abuse_api_response(ok=True),
         abuse_api_response(ok=False, status_error=HTTPStatus.TOO_MANY_REQUESTS,
                            payload=ABUSE_429_RESPONSE)
     )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json_multiple
+        route, headers=headers(valid_jwt()), json=valid_json_multiple
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -223,14 +237,20 @@ def test_enrich_call_error_with_data(categories_mock, route, client, valid_jwt,
 @mock.patch('api.enrich.get_categories_objects')
 def test_enrich_call_success_limit_1(categories_mock, route, client, valid_jwt,
                                      valid_json, abuse_api_request):
+
     categories_mock.return_value = ABUSE_CATEGORIES
-    abuse_api_request.return_value = abuse_api_response(ok=True)
+    abuse_api_request.side_effect = (
+        abuse_api_response(ok=True,
+                           payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        abuse_api_response(ok=True),
+        abuse_api_response(ok=True)
+    )
 
     if route == '/observe/observables':
         client.application.config['CTR_ENTITIES_LIMIT'] = 1
 
         response = client.post(
-            route, headers=headers(valid_jwt), json=valid_json
+            route, headers=headers(valid_jwt(limit=1)), json=valid_json
         )
 
         assert response.status_code == HTTPStatus.OK
@@ -266,14 +286,21 @@ def test_enrich_call_success_limit_1(categories_mock, route, client, valid_jwt,
 
 def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
                                 abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False,
-        status_error=HTTPStatus.UNAUTHORIZED,
-        payload=ABUSE_401_RESPONSE
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+        ),
+        abuse_api_response(
+            ok=False,
+            status_error=HTTPStatus.UNAUTHORIZED,
+            payload=ABUSE_401_RESPONSE
+        )
     )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -284,11 +311,15 @@ def test_enrich_call_auth_error(route, client, valid_jwt, valid_json,
 
 def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
                                abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False, status_error=HTTPStatus.NOT_FOUND)
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(ok=True,
+                           payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        abuse_api_response(ok=False, status_error=HTTPStatus.NOT_FOUND)
+    )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -299,11 +330,16 @@ def test_enrich_call_404_error(route, client, valid_jwt, valid_json,
 
 def test_enrich_call_500_error(route, client, valid_jwt, valid_json,
                                abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False, status_error=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True, payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        abuse_api_response(
+            ok=False, status_error=HTTPStatus.INTERNAL_SERVER_ERROR)
+    )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -312,14 +348,20 @@ def test_enrich_call_500_error(route, client, valid_jwt, valid_json,
     assert data == EXPECTED_RESPONSE_500_ERROR
 
 
-@mock.patch('api.enrich.get_categories_objects')
+@mock.patch('api.enrich.get_categories')
 def test_enrich_call_422_error(categories_mock, route, client, valid_jwt,
                                valid_json, abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False, status_error=HTTPStatus.UNPROCESSABLE_ENTITY)
+
+    categories_mock.return_value = ABUSE_CATEGORIES
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True, payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        abuse_api_response(
+            ok=False, status_error=HTTPStatus.UNPROCESSABLE_ENTITY)
+    )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -330,14 +372,21 @@ def test_enrich_call_422_error(categories_mock, route, client, valid_jwt,
 
 def test_enrich_call_429_error(route, client, valid_jwt, valid_json,
                                abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False,
-        status_error=HTTPStatus.TOO_MANY_REQUESTS,
-        payload=ABUSE_429_RESPONSE
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+        ),
+        abuse_api_response(
+            ok=False,
+            status_error=HTTPStatus.TOO_MANY_REQUESTS,
+            payload=ABUSE_429_RESPONSE
+        )
     )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -348,13 +397,20 @@ def test_enrich_call_429_error(route, client, valid_jwt, valid_json,
 
 def test_enrich_call_503_error(route, client, valid_jwt, valid_json,
                                abuse_api_request):
-    abuse_api_request.return_value = abuse_api_response(
-        ok=False,
-        status_error=HTTPStatus.SERVICE_UNAVAILABLE
+
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+        ),
+        abuse_api_response(
+            ok=False,
+            status_error=HTTPStatus.SERVICE_UNAVAILABLE
+        )
     )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -365,13 +421,19 @@ def test_enrich_call_503_error(route, client, valid_jwt, valid_json,
 
 def test_enrich_call_ssl_error(route, client, valid_jwt, valid_json,
                                abuse_api_request):
+
     mock_exception = mock.MagicMock()
     mock_exception.reason.args.__getitem__().verify_message \
         = 'self signed certificate'
-    abuse_api_request.side_effect = SSLError(mock_exception)
+    abuse_api_request.side_effect = (
+        abuse_api_response(
+            ok=True,
+            payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        SSLError(mock_exception)
+    )
 
     response = client.post(
-        route, headers=headers(valid_jwt), json=valid_json
+        route, headers=headers(valid_jwt()), json=valid_json
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -382,8 +444,8 @@ def test_enrich_call_ssl_error(route, client, valid_jwt, valid_json,
 
 @mock.patch('api.enrich.get_categories_objects')
 def test_enrich_call_auth_header_error(categories_mock, route, client,
-                                       valid_jwt, valid_json,
-                                       abuse_api_request):
+                                       valid_json, abuse_api_request):
+
     categories_mock.return_value = ABUSE_CATEGORIES
     abuse_api_request.return_value = abuse_api_response(ok=True)
 
@@ -397,7 +459,7 @@ def test_enrich_call_auth_header_error(categories_mock, route, client,
 
 @mock.patch('api.enrich.get_categories_objects')
 def test_enrich_call_auth_type_error(categories_mock, route, client,
-                                     valid_jwt, valid_json, abuse_api_request):
+                                     valid_json, abuse_api_request):
     categories_mock.return_value = ABUSE_CATEGORIES
     abuse_api_request.return_value = abuse_api_response(ok=True)
     header = {
@@ -449,39 +511,68 @@ def test_enrich_call_payload_structure_error(categories_mock, route, client,
     assert data == EXPECTED_JWT_PAYLOAD_STRUCTURE_ERROR
 
 
-@mock.patch('api.enrich.get_categories_objects')
-def test_enrich_call_wrong_secret_key_error(categories_mock, route, client,
-                                            valid_jwt, valid_json,
-                                            abuse_api_request):
-    categories_mock.return_value = ABUSE_CATEGORIES
-    abuse_api_request.return_value = abuse_api_response(ok=True)
-    right_secret_key = client.application.secret_key
-    client.application.secret_key = 'wrong_key'
+def test_enrich_call_wrong_jwks_host_error(route, client, valid_jwt,
+                                           valid_json, abuse_api_request):
+    for error in (ConnectionError, InvalidURL):
+        abuse_api_request.side_effect = error()
 
-    response = client.post(route, headers=headers(valid_jwt), json=valid_json)
+        response = client.post(
+            route, headers=headers(valid_jwt()), json=valid_json
+        )
+        assert response.status_code == HTTPStatus.OK
+        assert response.get_json() == EXPECTED_WRONG_JWKS_HOST_ERROR
 
-    client.application.secret_key = right_secret_key
 
+def test_enrich_call_jwks_host_missing_error(route, client, valid_jwt,
+                                             valid_json):
+    response = client.post(
+        route, headers=headers(valid_jwt(jwks_host=None)), json=valid_json
+    )
     assert response.status_code == HTTPStatus.OK
-
-    data = response.get_json()
-    assert data == EXPECTED_WRONG_SECRET_KEY_ERROR
+    assert response.get_json() == EXPECTED_JWKS_HOST_MISSING_ERROR
 
 
-@mock.patch('api.enrich.get_categories_objects')
-def test_enrich_call_missed_secret_key_error(categories_mock, route, client,
-                                             valid_jwt, valid_json,
-                                             abuse_api_request):
-    categories_mock.return_value = ABUSE_CATEGORIES
-    abuse_api_request.return_value = abuse_api_response(ok=True)
-    right_secret_key = client.application.secret_key
-    client.application.secret_key = None
-
-    response = client.post(route, headers=headers(valid_jwt), json=valid_json)
-
-    client.application.secret_key = right_secret_key
-
+@mock.patch('api.utils.jwt.decode')
+def test_enrich_call_invalid_signature_error(
+        decode_mock, route, client, valid_jwt, valid_json, abuse_api_request
+):
+    decode_mock.side_effect = InvalidSignatureError()
+    abuse_api_request.return_value = abuse_api_response(
+        ok=True,
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+    response = client.post(
+        route, headers=headers(valid_jwt()), json=valid_json
+    )
     assert response.status_code == HTTPStatus.OK
+    assert response.get_json() == EXPECTED_INVALID_SIGNATURE_ERROR
 
-    data = response.get_json()
-    assert data == EXPECTED_MISSED_SECRET_KEY_ERROR
+
+def test_enrich_call_wrong_audience_error(
+        route, client, valid_jwt, valid_json, abuse_api_request
+):
+    abuse_api_request.return_value = abuse_api_response(
+        ok=True,
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+    response = client.post(
+        route, json=valid_json,
+        headers=headers(valid_jwt(aud='http://wrongaudience'))
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.get_json() == EXPECTED_WRONG_AUDIENCE_ERROR
+
+
+def test_enrich_call_kid_not_in_api_error(
+        route, client, valid_jwt, valid_json, abuse_api_request
+):
+    abuse_api_request.return_value = abuse_api_response(
+        ok=True,
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+    response = client.post(
+        route, json=valid_json,
+        headers=headers(valid_jwt(kid='left_kid'))
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.get_json() == EXPECTED_KID_NOT_IN_API_ERROR
