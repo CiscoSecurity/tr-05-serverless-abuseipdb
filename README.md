@@ -132,9 +132,9 @@ old `URL` forever.
 Now, the only thing left to do is to follow one of these URLs to navigate 
 to SecureX Threat Response page in your region and create the Pulsedive
 module using your Lambda's URL and Pulsedive API key:
-- US: https://securex.us.security.cisco.com/integrations/available/44606d8d-fc66-4ac7-815b-4448e096180f/new
-- EU: https://securex.eu.security.cisco.com/integrations/available/33b8dd88-d126-49f8-afca-3a43dee7896d/new
-- APJC: https://securex.apjc.security.cisco.com/integrations/available/213bd6b5-fd73-44db-9157-3b5156b01530/new  
+- US: https://securex.us.security.cisco.com/integrations/available/07aedd54-aaed-43d0-b862-e8dc5e61bc91/new
+- EU: https://securex.eu.security.cisco.com/integrations/available/4b4b5ea4-fc3f-43d3-95b7-5745527c1428/new
+- APJC: https://securex.apjc.security.cisco.com/integrations/available/e97eecc4-6680-42d2-bb14-3864e73bfab0/new  
 
 You will also be prompted to enter `CTR_ENTITIES_LIMIT` variable that:
   - Restricts the maximum number of CTIM entities of each type returned in a
@@ -212,9 +212,7 @@ header set to `Bearer <JWT>`.
 - `ip`
 - `ipv6`
 
-### JWT Payload Structure
-
-## CTIM Mapping Specifics
+### CTIM Mapping Specifics
 
 Each response from the AbuseIPDB API for the supported observables generates
 the following CTIM entities:

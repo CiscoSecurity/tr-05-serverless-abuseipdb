@@ -55,7 +55,7 @@ def get_auth_token():
         raise AuthorizationError(expected_errors[error.__class__])
 
 
-def get_pub_key(jwks_host, token):
+def get_public_key(jwks_host, token):
     expected_errors = {
         ConnectionError: 'Wrong jwks_host in JWT payload. '
                          'Make sure domain follows the '
@@ -104,7 +104,7 @@ def get_jwt():
         jwks_host = jwt.decode(
             token, options={'verify_signature': False}).get('jwks_host')
         assert jwks_host
-        key = get_pub_key(jwks_host, token)
+        key = get_public_key(jwks_host, token)
         aud = request.url_root
         payload = jwt.decode(
             token, key=key, algorithms=['RS256'], audience=[aud.rstrip('/')]
