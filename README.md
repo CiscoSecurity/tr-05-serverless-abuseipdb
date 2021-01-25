@@ -130,8 +130,8 @@ old `URL` forever.
 ### SecureX Threat Response Module
 
 Now, the only thing left to do is to follow one of these URLs to navigate 
-to SecureX Threat Response page in your region and create the Pulsedive
-module using your Lambda's URL and Pulsedive API key:
+to SecureX Threat Response page in your region and create the AbuseIPDB IP Checker
+module using your Lambda's URL and AbuseIPDB IP Checker API key:
 - US: https://securex.us.security.cisco.com/integrations/available/07aedd54-aaed-43d0-b862-e8dc5e61bc91/new
 - EU: https://securex.eu.security.cisco.com/integrations/available/4b4b5ea4-fc3f-43d3-95b7-5745527c1428/new
 - APJC: https://securex.apjc.security.cisco.com/integrations/available/e97eecc4-6680-42d2-bb14-3864e73bfab0/new  
@@ -162,10 +162,6 @@ You can perform two kinds of testing:
 - Run the suite of unit tests and measure the code coverage:
 
   `coverage run --source api/ -m pytest --verbose tests/unit/ && coverage report`
-
-If you want to test the live Lambda you may use any HTTP client (e.g. Postman),
-just make sure to send requests to your Lambda's `URL` with the `Authorization`
-header set to `Bearer <JWT>`.
 
 **NOTE.** If you need input data for testing purposes you can use data from the
 [observables.json](observables.json) file.
