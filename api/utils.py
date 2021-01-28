@@ -92,8 +92,8 @@ def get_jwt():
         AssertionError: 'jwk_host is missing in JWT payload. Make sure '
                         'custom_jwks_host field is present in module_type',
         InvalidSignatureError: 'Failed to decode JWT with provided key. '
-                               'Make suer domain in custom_jwks_host '
-                               'corresponds to your SekureX instance region.',
+                               'Make sure domain in custom_jwks_host '
+                               'corresponds to your SecureX instance region.',
         DecodeError: 'Wrong JWT structure',
         InvalidAudienceError: 'Wrong configuration-token-audience',
         TypeError: 'kid from JWT header not found in API response'

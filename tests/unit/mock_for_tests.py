@@ -653,8 +653,8 @@ EXPECTED_INVALID_SIGNATURE_ERROR = {
         {
             'code': 'authorization error',
             'message': 'Authorization failed: Failed to decode JWT with '
-                       'provided key. Make suer domain in custom_jwks_host '
-                       'corresponds to your SekureX instance region.',
+                       'provided key. Make sure domain in custom_jwks_host '
+                       'corresponds to your SecureX instance region.',
             'type': 'fatal'
         }
     ]
