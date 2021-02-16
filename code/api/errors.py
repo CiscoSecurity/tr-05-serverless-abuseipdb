@@ -7,6 +7,7 @@ TOO_MANY_REQUESTS = 'too many requests'
 SERVER_DOWN = 'web server is down'
 SERVER_UNAVAILABLE = 'service unavailable'
 AUTH_ERROR = 'authorization error'
+HEALTH_CHECK_ERROR = 'health check failed'
 
 
 class TRError(Exception):
@@ -102,4 +103,12 @@ class BadRequestError(TRError):
         super().__init__(
             INVALID_ARGUMENT,
             error_message
+        )
+
+
+class AbuseWatchdogError(TRError):
+    def __init__(self):
+        super().__init__(
+            HEALTH_CHECK_ERROR,
+            'Invalid Health Check'
         )

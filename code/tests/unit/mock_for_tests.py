@@ -682,6 +682,16 @@ EXPECTED_KID_NOT_IN_API_ERROR = {
     ]
 }
 
+EXPECTED_WATCHDOG_ERROR = {
+    'errors': [
+        {
+            'code': 'health check failed',
+            'message': 'Invalid Health Check',
+            'type': 'fatal'
+        }
+    ]
+}
+
 EXPECTED_RESPONSE_OF_JWKS_ENDPOINT = {
     'keys': [
         {
