@@ -106,7 +106,6 @@ def get_jwt():
         assert jwks_host
         key = get_public_key(jwks_host, token)
         aud = request.url_root
-        print(aud)
         payload = jwt.decode(
             token, key=key, algorithms=['RS256'], audience=[aud.rstrip('/')]
         )
