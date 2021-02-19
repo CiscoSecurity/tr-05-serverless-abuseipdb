@@ -1,10 +1,10 @@
+import json
 from uuid import NAMESPACE_X500
-
-from __version__ import VERSION
 
 
 class Config(object):
-    VERSION = VERSION
+    settings = json.load(open('container_settings.json', 'r'))
+    VERSION = settings["VERSION"]
 
     NAMESPACE_BASE = NAMESPACE_X500
 
