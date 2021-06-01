@@ -1,6 +1,7 @@
 import json
 from typing import Optional
 from http import HTTPStatus
+from json import JSONDecodeError
 
 import jwt
 import requests
@@ -63,6 +64,10 @@ def get_public_key(jwks_host, token):
         InvalidURL: 'Wrong jwks_host in JWT payload. '
                     'Make sure domain follows the '
                     'visibility.<region>.cisco.com structure',
+        JSONDecodeError: 'Wrong jwks_host in JWT payload. '
+                         'Make sure domain follows the '
+                         'visibility.<region>.cisco.com structure',
+
     }
     try:
         response = requests.get(f"https://{jwks_host}/.well-known/jwks")
