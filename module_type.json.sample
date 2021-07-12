@@ -1,5 +1,5 @@
 {
-    "title": "AbuseIPDB IP Checker",
+    "title": "(Cisco Hosted) AbuseIPDB IP Checker",
     "default_name": "AbuseIPDB",
     "short_description": "Check IP addresses against AbuseIPDB's abusive IP database.",
     "description": "AbuseIPDB is a project dedicated to helping combat the spread of hackers, spammers, and abusive activity on the Internet. It is a public database of reported attacks from sysadmins and webmasters across the globe. With this module, you can scan AbuseIPDB's database for reports of attacks for a given IP.",
