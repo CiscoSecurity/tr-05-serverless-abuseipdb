@@ -640,7 +640,7 @@ EXPECTED_JWKS_HOST_MISSING_ERROR = {
     'errors': [
         {
             'code': 'authorization error',
-            'message': 'Authorization failed: jwk_host is missing in JWT '
+            'message': 'Authorization failed: jwks_host is missing in JWT '
                        'payload. Make sure custom_jwks_host field is present '
                        'in module_type',
             'type': 'fatal'
