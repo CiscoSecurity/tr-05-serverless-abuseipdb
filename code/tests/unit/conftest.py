@@ -32,7 +32,8 @@ def valid_jwt(client):
             jwks_host='visibility.amp.cisco.com',
             aud='http://localhost',
             limit=100,
-            kid='02B1174234C29F8EFB69911438F597FF3FFEE6B7'
+            kid='02B1174234C29F8EFB69911438F597FF3FFEE6B7',
+            wrong_jwks_host=False,
     ):
         payload = {
             'key': key,
@@ -40,6 +41,10 @@ def valid_jwt(client):
             'aud': aud,
             'CTR_ENTITIES_LIMIT': limit
         }
+
+        if wrong_jwks_host:
+            payload.pop('jwks_host')
+
         return jwt.encode(
             payload, client.application.rsa_private_key, algorithm='RS256',
             headers={

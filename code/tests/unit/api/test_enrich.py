@@ -526,7 +526,9 @@ def test_enrich_call_wrong_jwks_host_error(route, client, valid_jwt,
 def test_enrich_call_jwks_host_missing_error(route, client, valid_jwt,
                                              valid_json):
     response = client.post(
-        route, headers=headers(valid_jwt(jwks_host=None)), json=valid_json
+        route,
+        headers=headers(valid_jwt(wrong_jwks_host=True)),
+        json=valid_json,
     )
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_JWKS_HOST_MISSING_ERROR
