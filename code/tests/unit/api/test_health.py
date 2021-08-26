@@ -218,7 +218,8 @@ def test_health_call_wrong_jwks_host_error(route, client, valid_jwt,
 
 def test_health_call_jwks_host_missing_error(route, client, valid_jwt):
 
-    response = client.post(route, headers=headers(valid_jwt(jwks_host=None)))
+    response = client.post(route,
+                           headers=headers(valid_jwt(wrong_jwks_host=True)))
 
     assert response.status_code == HTTPStatus.OK
     assert response.get_json() == EXPECTED_JWKS_HOST_MISSING_ERROR
