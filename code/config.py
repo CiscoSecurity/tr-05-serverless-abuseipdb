@@ -72,3 +72,8 @@ class Config(object):
         'Suspicious': 3,
         'Malicious': 2
     }
+
+    USER_AGENT = {
+        'User-Agent': ('SecureX Threat Response Integrations '
+                       '<tr-integrations-support@cisco.com>')
+    }
