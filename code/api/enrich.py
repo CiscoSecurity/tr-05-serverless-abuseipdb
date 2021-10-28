@@ -25,9 +25,8 @@ def validate_abuse_ipdb_output(abuse_input, token):
     url = url_for('check')
 
     headers = {
+        **current_app.config['USER_AGENT'],
         'Accept': 'application/json',
-        'User-Agent': ('SecureX Threat Response Integrations '
-                       '<tr-integrations-support@cisco.com>'),
         'Key': token
     }
 
@@ -75,7 +74,8 @@ def get_categories():
 
     # get categories HTML page with categories table
     response = requests.get(
-        url=current_app.config['ABUSE_IPDB_CATEGORIES_URL']
+        url=current_app.config['ABUSE_IPDB_CATEGORIES_URL'],
+        headers=current_app.config['USER_AGENT']
     )
 
     categories_output = get_response_data(response)
