@@ -401,9 +401,3 @@ def observe_observables():
         relay_output['relationships'] = format_docs(g.relationships)
 
     return jsonify_data(relay_output)
-
-
-@enrich_api.route('/refer/observables', methods=['POST'])
-def refer_observables():
-    # Not implemented
-    return jsonify_data([])
