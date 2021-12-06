@@ -13,7 +13,8 @@ from api.utils import (
     get_response_data,
     get_categories_objects,
     format_docs,
-    catch_ssl_errors
+    catch_ssl_errors,
+    catch_auth_errors,
 )
 
 
@@ -21,6 +22,7 @@ enrich_api = Blueprint('enrich', __name__)
 
 
 @catch_ssl_errors
+@catch_auth_errors
 def validate_abuse_ipdb_output(abuse_input, token):
     url = url_for('check')
 
@@ -70,6 +72,7 @@ def get_abuse_ipdb_outputs(observable, token):
 
 
 @catch_ssl_errors
+@catch_auth_errors
 def get_categories():
 
     # get categories HTML page with categories table
