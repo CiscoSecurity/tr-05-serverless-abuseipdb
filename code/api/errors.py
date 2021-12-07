@@ -8,6 +8,9 @@ SERVER_DOWN = 'web server is down'
 SERVER_UNAVAILABLE = 'service unavailable'
 AUTH_ERROR = 'authorization error'
 HEALTH_CHECK_ERROR = 'health check failed'
+WRONG_API_KEY = ('Authentication failed. Your API key is either missing, '
+                 'incorrect, or revoked. Note: The APIv2 key differs from the'
+                 ' APIv1 key.')
 
 
 class TRError(Exception):
@@ -90,7 +93,7 @@ class AbuseSSLError(TRError):
 
 
 class AuthorizationError(TRError):
-    def __init__(self, message):
+    def __init__(self, message=WRONG_API_KEY):
 
         super().__init__(
             AUTH_ERROR,

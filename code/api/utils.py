@@ -11,7 +11,8 @@ from requests.exceptions import (
     SSLError,
     ConnectionError,
     InvalidURL,
-    HTTPError
+    HTTPError,
+    InvalidHeader,
 )
 from bs4 import BeautifulSoup
 
@@ -253,4 +254,13 @@ def catch_ssl_errors(func):
             return func(*args, **kwargs)
         except SSLError as error:
             raise AbuseSSLError(error)
+    return wraps
+
+
+def catch_auth_errors(func):
+    def wraps(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except (UnicodeEncodeError, InvalidHeader):
+            raise AuthorizationError
     return wraps
