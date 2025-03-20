@@ -139,7 +139,8 @@ def extract_verdicts(output, start_time):
     disposition, disposition_name = get_disposition(output['data'])
 
     valid_time = {
-        'start_time': start_time.isoformat() + 'Z'
+        'start_time': start_time.isoformat() + 'Z',
+        'end_time': (start_time + timedelta(days=30)).isoformat() + 'Z'
     }
 
     observable = {
